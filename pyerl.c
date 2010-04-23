@@ -297,6 +297,49 @@ pyerl_mk_longlong(PyObject *self, PyObject *args)
 	return (PyObject *)eterm;
 }
 
+static PyObject *
+pyerl_mk_list(PyObject *self, PyObject *args)
+{
+	EtermObject *eterm;
+	PyObject *array;
+	Py_ssize_t size;
+	int i;
+	PyObject *obj;
+	EtermObject *eobj;
+	ETERM **eterm_array;
+
+	if (!PyArg_ParseTuple(args, "O", &array)){
+		return NULL;
+	}
+	if(!PyList_Check(array)){
+		return NULL;
+	}
+	size = PyList_Size(array);
+	eterm_array = (ETERM **)malloc(sizeof(ETERM *) * size);
+	for(i=0; i<size; i++){
+		obj = PyList_GetItem(array, i);
+		if(!PyObject_TypeCheck(obj, &EtermType)){
+			PyErr_SetString(PyExc_TypeError, "Expected pyerl_mk_list");
+			return NULL;
+		}
+		eobj = (EtermObject *)obj;
+		eterm_array[i] = erl_copy_term(eobj->term);
+	}
+
+	if(!(eterm = (EtermObject *)EtermType.tp_new(&EtermType, NULL, NULL))){
+		free(eterm_array);
+		return NULL;
+	}
+
+	if(!(eterm->term = erl_mk_list(eterm_array, size))){
+		free(eterm_array);
+		EtermType.tp_dealloc((PyObject *)eterm);
+		return NULL;
+	}
+	free(eterm_array);
+	return (PyObject *)eterm;
+}
+
 
 static PyMethodDef methods[] = {
 	{"init", pyerl_init, METH_VARARGS,
@@ -326,6 +369,7 @@ static PyMethodDef methods[] = {
 	{"mk_float", pyerl_mk_float, METH_VARARGS, NULL},
 	{"mk_int", pyerl_mk_int, METH_VARARGS, NULL},
 	{"mk_longlong", pyerl_mk_longlong, METH_VARARGS, NULL},
+	{"mk_list", pyerl_mk_list, METH_VARARGS, NULL},
 
 	{NULL, NULL}
 };

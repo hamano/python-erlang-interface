@@ -54,7 +54,32 @@ static PyMemberDef Eterm_members[] = {
 	{NULL}  /* Sentinel */
 };
 
+static PyObject *
+Eterm_gettype(EtermObject *self, void *closure)
+{
+	return Py_BuildValue("i", ERL_TYPE(self->term));
+}
+
+static PyGetSetDef Eterm_getseters[] = {
+	{"type", (getter)Eterm_gettype, NULL, NULL, NULL},
+	{NULL}  /* Sentinel */
+};
+
+static PyObject *
+Eterm_print_term(EtermObject *self)
+{
+	int ret = 0;
+	if(self->term){
+		ret = erl_print_term(stdout, self->term);
+		printf("\n");
+	}
+	return Py_BuildValue("i", ret);
+}
+
 static PyMethodDef Eterm_methods[] = {
+	{"print_term", (PyCFunction)Eterm_print_term, METH_NOARGS,
+     "print EtermObject for debug"
+    },
     {NULL}  /* Sentinel */
 };
 
@@ -89,7 +114,7 @@ PyTypeObject EtermType = {
 	0,                         /* tp_iternext */
 	Eterm_methods,             /* tp_methods */
 	Eterm_members,             /* tp_members */
-	0,                         /* tp_getset */
+	Eterm_getseters,           /* tp_getset */
 	0,                         /* tp_base */
 	0,                         /* tp_dict */
 	0,                         /* tp_descr_get */

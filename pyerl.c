@@ -185,6 +185,26 @@ pyerl_mk_atom(PyObject *self, PyObject *args)
 	return (PyObject *)eterm;
 }
 
+static PyObject *
+pyerl_mk_binary(PyObject *self, PyObject *args)
+{
+	EtermObject *eterm;
+	const char *bptr;
+	int size;
+
+	if (!PyArg_ParseTuple(args, "s#", &bptr, &size)){
+		return NULL;
+	}
+	if(!(eterm = (EtermObject *)EtermType.tp_new(&EtermType, NULL, NULL))){
+		return NULL;
+	}
+	if(!(eterm->term = erl_mk_binary(bptr, size))){
+		EtermType.tp_dealloc((PyObject *)eterm);
+		return NULL;
+	}
+	return (PyObject *)eterm;
+}
+
 
 static PyMethodDef methods[] = {
 	{"init", pyerl_init, METH_VARARGS,
@@ -208,6 +228,7 @@ static PyMethodDef methods[] = {
 	{"thiscreation", pyerl_thiscreation, METH_VARARGS, NULL},
 
 	{"mk_atom", pyerl_mk_atom, METH_VARARGS, NULL},
+	{"mk_binary", pyerl_mk_binary, METH_VARARGS, NULL},
 
 	{NULL, NULL}
 };

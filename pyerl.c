@@ -166,6 +166,26 @@ pyerl_thiscreation(PyObject *self, PyObject *args)
 }
 
 
+static PyObject *
+pyerl_mk_atom(PyObject *self, PyObject *args)
+{
+	EtermObject *eterm;
+	const char *string;
+
+	if (!PyArg_ParseTuple(args, "s", &string)){
+		return NULL;
+	}
+	if(!(eterm = (EtermObject *)EtermType.tp_new(&EtermType, NULL, NULL))){
+		return NULL;
+	}
+	if(!(eterm->term = erl_mk_atom(string))){
+		EtermType.tp_dealloc((PyObject *)eterm);
+		return NULL;
+	}
+	return (PyObject *)eterm;
+}
+
+
 static PyMethodDef methods[] = {
 	{"init", pyerl_init, METH_VARARGS,
 	 "This function must be called before any of the others in the pyerl module in order to initialize the module functions. The arguments must be specified as init(0, 0)."
@@ -186,6 +206,8 @@ static PyMethodDef methods[] = {
 	{"thishostname", pyerl_thishostname, METH_VARARGS, NULL},
 	{"thisalivename", pyerl_thisalivename, METH_VARARGS, NULL},
 	{"thiscreation", pyerl_thiscreation, METH_VARARGS, NULL},
+
+	{"mk_atom", pyerl_mk_atom, METH_VARARGS, NULL},
 
 	{NULL, NULL}
 };

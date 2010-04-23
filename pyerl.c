@@ -240,6 +240,25 @@ pyerl_mk_estring(PyObject *self, PyObject *args)
 	return (PyObject *)eterm;
 }
 
+static PyObject *
+pyerl_mk_float(PyObject *self, PyObject *args)
+{
+	EtermObject *eterm;
+	double f;
+
+	if (!PyArg_ParseTuple(args, "d", &f)){
+		return NULL;
+	}
+	if(!(eterm = (EtermObject *)EtermType.tp_new(&EtermType, NULL, NULL))){
+		return NULL;
+	}
+	if(!(eterm->term = erl_mk_float(f))){
+		EtermType.tp_dealloc((PyObject *)eterm);
+		return NULL;
+	}
+	return (PyObject *)eterm;
+}
+
 
 static PyMethodDef methods[] = {
 	{"init", pyerl_init, METH_VARARGS,
@@ -266,6 +285,7 @@ static PyMethodDef methods[] = {
 	{"mk_binary", pyerl_mk_binary, METH_VARARGS, NULL},
 	{"mk_empty_list", pyerl_mk_empty_list, METH_VARARGS, NULL},
 	{"mk_estring", pyerl_mk_estring, METH_VARARGS, NULL},
+	{"mk_float", pyerl_mk_float, METH_VARARGS, NULL},
 
 	{NULL, NULL}
 };

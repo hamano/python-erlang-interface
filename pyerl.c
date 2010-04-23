@@ -101,6 +101,30 @@ pyerl_close_connection(PyObject *self, PyObject *args)
 	return Py_BuildValue("i", ret);
 }
 
+static PyObject *
+pyerl_publish(PyObject *self, PyObject *args)
+{
+	int ret;
+	int port;
+	if(!PyArg_ParseTuple(args, "i", &port)){
+		return NULL;
+	}
+	ret = erl_publish(port);
+	return Py_BuildValue("i", ret);
+}
+
+static PyObject *
+pyerl_unpublish(PyObject *self, PyObject *args)
+{
+	int ret;
+	char *alive;
+
+	if (!PyArg_ParseTuple(args, "s", &alive))
+		return NULL;
+	ret = erl_unpublish(alive);
+	return Py_BuildValue("i", ret);
+}
+
 static PyMethodDef methods[] = {
 	{"init", pyerl_init, METH_VARARGS,
 	 "This function must be called before any of the others in the pyerl module in order to initialize the module functions. The arguments must be specified as init(0, 0)."
@@ -112,13 +136,16 @@ static PyMethodDef methods[] = {
 	{"xconnect", pyerl_xconnect, METH_VARARGS, NULL},
 	{"close_connection", pyerl_close_connection, METH_VARARGS, NULL},
 
+	{"publish", pyerl_publish, METH_VARARGS, NULL},
+	{"unpublish", pyerl_unpublish, METH_VARARGS, NULL},
+
 	{NULL, NULL}
 };
 
 void initpyerl(void)
 {
 	PyObject *m;
-	EtermType.tp_new = PyType_GenericNew;
+	//EtermType.tp_new = PyType_GenericNew;
 	if (PyType_Ready(&EtermType) < 0)
 		return;
 

@@ -404,6 +404,27 @@ pyerl_mk_ref(PyObject *self, PyObject *args)
 	return (PyObject *)eterm;
 }
 
+static PyObject *
+pyerl_mk_long_ref(PyObject *self, PyObject *args)
+{
+	EtermObject *eterm;
+	const char *node;
+	unsigned int n1, n2, n3;
+	unsigned int creation;
+
+	if (!PyArg_ParseTuple(args, "sIIII", &node, &n1, &n2, &n3, &creation)){
+		return NULL;
+	}
+	if(!(eterm = (EtermObject *)EtermType.tp_new(&EtermType, NULL, NULL))){
+		return NULL;
+	}
+	if(!(eterm->term = erl_mk_long_ref(node, n1, n2, n3, creation))){
+		EtermType.tp_dealloc((PyObject *)eterm);
+		return NULL;
+	}
+	return (PyObject *)eterm;
+}
+
 
 static PyMethodDef methods[] = {
 	{"init", pyerl_init, METH_VARARGS,
@@ -437,6 +458,7 @@ static PyMethodDef methods[] = {
 	{"mk_pid", pyerl_mk_pid, METH_VARARGS, NULL},
 	{"mk_port", pyerl_mk_port, METH_VARARGS, NULL},
 	{"mk_ref", pyerl_mk_ref, METH_VARARGS, NULL},
+	{"mk_long_ref", pyerl_mk_long_ref, METH_VARARGS, NULL},
 
 	{NULL, NULL}
 };

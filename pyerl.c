@@ -444,6 +444,49 @@ pyerl_mk_string(PyObject *self, PyObject *args)
 	return (PyObject *)eterm;
 }
 
+static PyObject *
+pyerl_mk_tuple(PyObject *self, PyObject *args)
+{
+	EtermObject *eterm;
+	PyObject *array;
+	Py_ssize_t size;
+	int i;
+	PyObject *obj;
+	EtermObject *eobj;
+	ETERM **eterm_array;
+
+	if (!PyArg_ParseTuple(args, "O", &array)){
+		return NULL;
+	}
+	if(!PyTuple_Check(array)){
+		return NULL;
+	}
+	size = PyTuple_Size(array);
+	eterm_array = (ETERM **)malloc(sizeof(ETERM *) * size);
+	for(i=0; i<size; i++){
+		obj = PyTuple_GetItem(array, i);
+		if(!PyObject_TypeCheck(obj, &EtermType)){
+			PyErr_SetString(PyExc_TypeError, "Expected pyerl_mk_tuple");
+			return NULL;
+		}
+		eobj = (EtermObject *)obj;
+		eterm_array[i] = erl_copy_term(eobj->term);
+	}
+
+	if(!(eterm = (EtermObject *)EtermType.tp_new(&EtermType, NULL, NULL))){
+		free(eterm_array);
+		return NULL;
+	}
+
+	if(!(eterm->term = erl_mk_tuple(eterm_array, size))){
+		free(eterm_array);
+		EtermType.tp_dealloc((PyObject *)eterm);
+		return NULL;
+	}
+	free(eterm_array);
+	return (PyObject *)eterm;
+}
+
 
 static PyMethodDef methods[] = {
 	{"init", pyerl_init, METH_VARARGS,
@@ -479,6 +522,7 @@ static PyMethodDef methods[] = {
 	{"mk_ref", pyerl_mk_ref, METH_VARARGS, NULL},
 	{"mk_long_ref", pyerl_mk_long_ref, METH_VARARGS, NULL},
 	{"mk_string", pyerl_mk_string, METH_VARARGS, NULL},
+	{"mk_tuple", pyerl_mk_tuple, METH_VARARGS, NULL},
 
 	{NULL, NULL}
 };

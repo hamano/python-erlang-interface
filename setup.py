@@ -3,7 +3,7 @@
 from distutils.core import setup, Extension
 
 setup(name = "PyErl",
-      version = "0.1.6",
+      version = "0.1.7",
       description = "Erlang Interface for Python",
       author = "Tsukasa Hamano",
       author_email = "code@cuspy.org",

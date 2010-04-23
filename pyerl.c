@@ -5,6 +5,7 @@
 #include <arpa/inet.h>
 #include <ei.h>
 #include <erl_interface.h>
+#include "eterm.h"
 
 static char pyerl_doc[] = "Erlang Interface for Python\n";
 
@@ -117,7 +118,13 @@ static PyMethodDef methods[] = {
 void initpyerl(void)
 {
 	PyObject *m;
+	EtermType.tp_new = PyType_GenericNew;
+	if (PyType_Ready(&EtermType) < 0)
+		return;
+
 	m = Py_InitModule3("pyerl", methods, pyerl_doc);
 	if (m == NULL)
 		return;
+	Py_INCREF(&EtermType);
+	PyModule_AddObject(m, "Eterm", (PyObject *)&EtermType);
 }

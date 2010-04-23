@@ -425,6 +425,25 @@ pyerl_mk_long_ref(PyObject *self, PyObject *args)
 	return (PyObject *)eterm;
 }
 
+static PyObject *
+pyerl_mk_string(PyObject *self, PyObject *args)
+{
+	EtermObject *eterm;
+	const char *string;
+
+	if (!PyArg_ParseTuple(args, "s", &string)){
+		return NULL;
+	}
+	if(!(eterm = (EtermObject *)EtermType.tp_new(&EtermType, NULL, NULL))){
+		return NULL;
+	}
+	if(!(eterm->term = erl_mk_string(string))){
+		EtermType.tp_dealloc((PyObject *)eterm);
+		return NULL;
+	}
+	return (PyObject *)eterm;
+}
+
 
 static PyMethodDef methods[] = {
 	{"init", pyerl_init, METH_VARARGS,
@@ -459,6 +478,7 @@ static PyMethodDef methods[] = {
 	{"mk_port", pyerl_mk_port, METH_VARARGS, NULL},
 	{"mk_ref", pyerl_mk_ref, METH_VARARGS, NULL},
 	{"mk_long_ref", pyerl_mk_long_ref, METH_VARARGS, NULL},
+	{"mk_string", pyerl_mk_string, METH_VARARGS, NULL},
 
 	{NULL, NULL}
 };

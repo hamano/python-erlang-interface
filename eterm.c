@@ -70,15 +70,13 @@ Eterm_print_term(EtermObject *self, PyObject *args)
 {
 	int ret = 0;
 	PyObject *stream = NULL;
-	FILE *fp;
+	FILE *fp = stdout;
 
 	if (!PyArg_ParseTuple(args, "|O", &stream)){
 		return NULL;
 	}
 	if(stream && PyFile_Check(stream)){
 		fp = PyFile_AsFile(stream);
-	}else{
-		fp = stdout;
 	}
 	if(self->term){
 		ret = erl_print_term(fp, self->term);

@@ -66,19 +66,35 @@ static PyGetSetDef Eterm_getseters[] = {
 };
 
 static PyObject *
-Eterm_print_term(EtermObject *self)
+Eterm_print_term(EtermObject *self, PyObject *args)
 {
 	int ret = 0;
+	PyObject *stream = NULL;
+	FILE *fp;
+
+	if (!PyArg_ParseTuple(args, "|O", &stream)){
+		return NULL;
+	}
+	if(stream && PyFile_Check(stream)){
+		fp = PyFile_AsFile(stream);
+	}else{
+		fp = stdout;
+	}
 	if(self->term){
-		ret = erl_print_term(stdout, self->term);
-		printf("\n");
+		ret = erl_print_term(fp, self->term);
+		fprintf(fp, "\n");
 	}
 	return Py_BuildValue("i", ret);
 }
 
 static PyMethodDef Eterm_methods[] = {
+/*
 	{"print_term", (PyCFunction)Eterm_print_term, METH_NOARGS,
      "print EtermObject for debug"
+    },
+*/
+	{"print_term", (PyCFunction)Eterm_print_term, METH_VARARGS,
+     "print EtermObject"
     },
     {NULL}  /* Sentinel */
 };

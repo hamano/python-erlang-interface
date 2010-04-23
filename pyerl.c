@@ -125,6 +125,47 @@ pyerl_unpublish(PyObject *self, PyObject *args)
 	return Py_BuildValue("i", ret);
 }
 
+static PyObject *
+pyerl_thiscookie(PyObject *self, PyObject *args)
+{
+	const char *ret;
+	ret = erl_thiscookie();
+	return Py_BuildValue("s", ret);
+}
+
+static PyObject *
+pyerl_thisnodename(PyObject *self, PyObject *args)
+{
+	const char *ret;
+	ret = erl_thisnodename();
+	return Py_BuildValue("s", ret);
+}
+
+static PyObject *
+pyerl_thishostname(PyObject *self, PyObject *args)
+{
+	const char *ret;
+	ret = erl_thishostname();
+	return Py_BuildValue("s", ret);
+}
+
+static PyObject *
+pyerl_thisalivename(PyObject *self, PyObject *args)
+{
+	const char *ret;
+	ret = erl_thishostname();
+	return Py_BuildValue("s", ret);
+}
+
+static PyObject *
+pyerl_thiscreation(PyObject *self, PyObject *args)
+{
+	int ret;
+	ret = erl_thiscreation();
+	return Py_BuildValue("i", ret);
+}
+
+
 static PyMethodDef methods[] = {
 	{"init", pyerl_init, METH_VARARGS,
 	 "This function must be called before any of the others in the pyerl module in order to initialize the module functions. The arguments must be specified as init(0, 0)."
@@ -138,6 +179,13 @@ static PyMethodDef methods[] = {
 
 	{"publish", pyerl_publish, METH_VARARGS, NULL},
 	{"unpublish", pyerl_unpublish, METH_VARARGS, NULL},
+	/* TODO */
+	/* {"accept", pyerl_accept, METH_VARARGS, NULL}, */
+	{"thiscookie", pyerl_thiscookie, METH_VARARGS, NULL},
+	{"thisnodename", pyerl_thisnodename, METH_VARARGS, NULL},
+	{"thishostname", pyerl_thishostname, METH_VARARGS, NULL},
+	{"thisalivename", pyerl_thisalivename, METH_VARARGS, NULL},
+	{"thiscreation", pyerl_thiscreation, METH_VARARGS, NULL},
 
 	{NULL, NULL}
 };

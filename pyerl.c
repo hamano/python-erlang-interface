@@ -340,6 +340,28 @@ pyerl_mk_list(PyObject *self, PyObject *args)
 	return (PyObject *)eterm;
 }
 
+static PyObject *
+pyerl_mk_pid(PyObject *self, PyObject *args)
+{
+	EtermObject *eterm;
+	const char *node;
+	unsigned int number;
+	unsigned int serial;
+	unsigned int creation;
+
+	if (!PyArg_ParseTuple(args, "sIII", &node, &number, &serial, &creation)){
+		return NULL;
+	}
+	if(!(eterm = (EtermObject *)EtermType.tp_new(&EtermType, NULL, NULL))){
+		return NULL;
+	}
+	if(!(eterm->term = erl_mk_pid(node, number, serial, creation))){
+		EtermType.tp_dealloc((PyObject *)eterm);
+		return NULL;
+	}
+	return (PyObject *)eterm;
+}
+
 
 static PyMethodDef methods[] = {
 	{"init", pyerl_init, METH_VARARGS,
@@ -370,6 +392,7 @@ static PyMethodDef methods[] = {
 	{"mk_int", pyerl_mk_int, METH_VARARGS, NULL},
 	{"mk_longlong", pyerl_mk_longlong, METH_VARARGS, NULL},
 	{"mk_list", pyerl_mk_list, METH_VARARGS, NULL},
+	{"mk_pid", pyerl_mk_pid, METH_VARARGS, NULL},
 
 	{NULL, NULL}
 };

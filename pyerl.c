@@ -571,6 +571,29 @@ pyerl_print_term(PyObject *self, PyObject *args)
 	return Py_BuildValue("i", ret);
 }
 
+static PyObject *
+pyerl_size(PyObject *self, PyObject *args)
+{
+	int ret = 0;
+	PyObject *term = NULL;
+	EtermObject *eterm;
+
+	if (!PyArg_ParseTuple(args, "O", &term)){
+		return NULL;
+	}
+
+	if(!PyObject_TypeCheck(term, &EtermType)){
+		return NULL;
+	}
+
+	eterm = (EtermObject *)term;
+	if(!eterm->term){
+		return NULL;
+	}
+	ret = erl_size(eterm->term);
+	return Py_BuildValue("i", ret);
+}
+
 
 static PyMethodDef methods[] = {
 	{"init", pyerl_init, METH_VARARGS,
@@ -612,6 +635,7 @@ static PyMethodDef methods[] = {
 	{"mk_var", pyerl_mk_var, METH_VARARGS, NULL},
 
 	{"print_term", pyerl_print_term, METH_VARARGS, NULL},
+	{"size", pyerl_size, METH_VARARGS, NULL},
 
 	{NULL, NULL}
 };

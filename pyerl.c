@@ -544,6 +544,33 @@ pyerl_mk_var(PyObject *self, PyObject *args)
 	return (PyObject *)eterm;
 }
 
+static PyObject *
+pyerl_print_term(PyObject *self, PyObject *args)
+{
+	int ret = 0;
+	PyObject *stream;
+	PyObject *term;
+	EtermObject *eterm;
+	FILE *fp = stdout;
+
+	if (!PyArg_ParseTuple(args, "OO", &stream, &term)){
+		return NULL;
+	}
+	if(PyFile_Check(stream)){
+		fp = PyFile_AsFile(stream);
+	}else{
+		return NULL;
+	}
+	eterm = (EtermObject *)term;
+	if(!eterm->term){
+		return NULL;
+	}
+	ret = erl_print_term(fp, eterm->term);
+	fprintf(fp, "\n");
+
+	return Py_BuildValue("i", ret);
+}
+
 
 static PyMethodDef methods[] = {
 	{"init", pyerl_init, METH_VARARGS,
@@ -583,6 +610,8 @@ static PyMethodDef methods[] = {
 	{"mk_uint", pyerl_mk_uint, METH_VARARGS, NULL},
 	{"mk_ulonglong", pyerl_mk_ulonglong, METH_VARARGS, NULL},
 	{"mk_var", pyerl_mk_var, METH_VARARGS, NULL},
+
+	{"print_term", pyerl_print_term, METH_VARARGS, NULL},
 
 	{NULL, NULL}
 };

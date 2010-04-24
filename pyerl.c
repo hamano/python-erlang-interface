@@ -652,4 +652,27 @@ void initpyerl(void)
 		return;
 	Py_INCREF(&EtermType);
 	PyModule_AddObject(m, "Eterm", (PyObject *)&EtermType);
+
+	PyModule_AddIntConstant(m, "COMPOUND", ERL_COMPOUND);
+	PyModule_AddIntConstant(m, "UNDEF", ERL_UNDEF);
+	PyModule_AddIntConstant(m, "INTEGER", ERL_INTEGER);
+	PyModule_AddIntConstant(m, "U_INTEGER", ERL_U_INTEGER);
+	PyModule_AddIntConstant(m, "ATOM", ERL_ATOM);
+	PyModule_AddIntConstant(m, "PID", ERL_PID);
+	PyModule_AddIntConstant(m, "PORT", ERL_PORT);
+	PyModule_AddIntConstant(m, "REF", ERL_REF);
+	PyModule_AddIntConstant(m, "CONS", ERL_CONS);
+	PyModule_AddIntConstant(m, "LIST", ERL_LIST);
+	PyModule_AddIntConstant(m, "NIL", ERL_NIL);
+	PyModule_AddIntConstant(m, "EMPTY_LIST", ERL_EMPTY_LIST);
+	PyModule_AddIntConstant(m, "TUPLE", ERL_TUPLE);
+	PyModule_AddIntConstant(m, "BINARY", ERL_BINARY);
+	PyModule_AddIntConstant(m, "FLOAT", ERL_FLOAT);
+	PyModule_AddIntConstant(m, "VARIABLE", ERL_VARIABLE);
+	PyModule_AddIntConstant(m, "SMALL_BIG", ERL_SMALL_BIG);
+	PyModule_AddIntConstant(m, "U_SMALL_BIG", ERL_U_SMALL_BIG);
+	PyModule_AddIntConstant(m, "FUNCTION", ERL_FUNCTION);
+	PyModule_AddIntConstant(m, "BIG", ERL_BIG);
+	PyModule_AddIntConstant(m, "LONGLONG", ERL_LONGLONG);
+	PyModule_AddIntConstant(m, "U_LONGLONG", ERL_U_LONGLONG);
 }

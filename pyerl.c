@@ -167,6 +167,43 @@ pyerl_thiscreation(PyObject *self, PyObject *args)
 
 
 static PyObject *
+pyerl_cons(PyObject *self, PyObject *args)
+{
+	EtermObject *ret;
+	PyObject *head;
+	PyObject *tail;
+	EtermObject *ehead;
+	EtermObject *etail;
+	ETERM *chead;
+	ETERM *ctail;
+
+	if (!PyArg_ParseTuple(args, "OO", &head, &tail)){
+		return NULL;
+	}
+	if(!PyObject_TypeCheck(head, &EtermType)){
+		return NULL;
+	}
+	if(!PyObject_TypeCheck(tail, &EtermType)){
+		return NULL;
+	}
+	if(!(ret = (EtermObject *)EtermType.tp_new(&EtermType, NULL, NULL))){
+		return NULL;
+	}
+	ehead = (EtermObject *)head;
+	etail = (EtermObject *)tail;
+	if(!ehead->term || !etail->term){
+		return NULL;
+	}
+
+	// deep copy
+	chead = erl_copy_term(ehead->term);
+	ctail = erl_copy_term(etail->term);
+
+	ret->term = erl_cons(chead, ctail);
+	return Py_BuildValue("O", ret);
+}
+
+static PyObject *
 pyerl_mk_atom(PyObject *self, PyObject *args)
 {
 	EtermObject *eterm;
@@ -315,6 +352,9 @@ pyerl_mk_list(PyObject *self, PyObject *args)
 		return NULL;
 	}
 	size = PyList_Size(array);
+	if(!(eterm = (EtermObject *)EtermType.tp_new(&EtermType, NULL, NULL))){
+		return NULL;
+	}
 	eterm_array = (ETERM **)malloc(sizeof(ETERM *) * size);
 	for(i=0; i<size; i++){
 		obj = PyList_GetItem(array, i);
@@ -324,11 +364,6 @@ pyerl_mk_list(PyObject *self, PyObject *args)
 		}
 		eobj = (EtermObject *)obj;
 		eterm_array[i] = erl_copy_term(eobj->term);
-	}
-
-	if(!(eterm = (EtermObject *)EtermType.tp_new(&EtermType, NULL, NULL))){
-		free(eterm_array);
-		return NULL;
 	}
 
 	if(!(eterm->term = erl_mk_list(eterm_array, size))){
@@ -615,6 +650,8 @@ static PyMethodDef methods[] = {
 	{"thishostname", pyerl_thishostname, METH_VARARGS, NULL},
 	{"thisalivename", pyerl_thisalivename, METH_VARARGS, NULL},
 	{"thiscreation", pyerl_thiscreation, METH_VARARGS, NULL},
+
+	{"cons", pyerl_cons, METH_VARARGS, NULL},
 
 	{"mk_atom", pyerl_mk_atom, METH_VARARGS, NULL},
 	{"mk_binary", pyerl_mk_binary, METH_VARARGS, NULL},

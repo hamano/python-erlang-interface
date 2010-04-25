@@ -228,6 +228,37 @@ pyerl_copy_term(PyObject *self, PyObject *args)
 }
 
 static PyObject *
+pyerl_element(PyObject *self, PyObject *args)
+{
+	EtermObject *ret;
+	int position;
+	PyObject *tuple;
+	EtermObject *etuple;
+	int size;
+
+	if (!PyArg_ParseTuple(args, "iO", &position, &tuple)){
+		return NULL;
+	}
+	if(!PyObject_TypeCheck(tuple, &EtermType)){
+		return NULL;
+	}
+	if(!(ret = (EtermObject *)EtermType.tp_new(&EtermType, NULL, NULL))){
+		return NULL;
+	}
+	printf("1\n");
+	etuple = (EtermObject *)tuple;
+	if(!etuple->term){
+		return NULL;
+	}
+	size = erl_size(etuple->term);
+	if(position < 1 || position > size){
+		return NULL;
+	}
+	ret->term = erl_element(position, etuple->term);
+	return Py_BuildValue("O", ret);
+}
+
+static PyObject *
 pyerl_mk_atom(PyObject *self, PyObject *args)
 {
 	EtermObject *eterm;
@@ -677,6 +708,7 @@ static PyMethodDef methods[] = {
 
 	{"cons", pyerl_cons, METH_VARARGS, NULL},
 	{"copy_term", pyerl_copy_term, METH_VARARGS, NULL},
+	{"element", pyerl_element, METH_VARARGS, NULL},
 
 	{"mk_atom", pyerl_mk_atom, METH_VARARGS, NULL},
 	{"mk_binary", pyerl_mk_binary, METH_VARARGS, NULL},

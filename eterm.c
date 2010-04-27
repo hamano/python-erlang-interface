@@ -97,6 +97,41 @@ static PyMethodDef Eterm_methods[] = {
     {NULL}  /* Sentinel */
 };
 
+static PyObject *
+Eterm_str(PyObject *self)
+{
+	PyObject *ret;
+	EtermObject *eterm = (EtermObject *)self;
+
+	switch(ERL_TYPE(eterm->term)){
+	case ERL_UNDEF:
+		ret = PyString_FromString("UNDEF");
+		break;
+	case ERL_INTEGER:
+		ret = PyString_FromFormat("%d", ERL_INT_VALUE(eterm->term));
+		break;
+	case ERL_U_INTEGER:
+		ret = PyString_FromFormat("%u", ERL_INT_UVALUE(eterm->term));
+		break;
+	case ERL_ATOM:
+		ret = PyString_FromFormat("%s", ERL_ATOM_PTR(eterm->term));
+		break;
+	case ERL_PID:
+		ret = PyString_FromFormat(
+			"<%s.%d.%d>",
+			ERL_PID_NODE(eterm->term),
+			ERL_PID_NUMBER(eterm->term),
+			ERL_PID_SERIAL(eterm->term));
+		break;
+	case ERL_PORT:
+		ret = PyString_FromString("#Port");
+		break;
+	default:
+		ret = PyString_FromString("ERROR");
+	}
+	return ret;
+}
+
 PyTypeObject EtermType = {
 	PyObject_HEAD_INIT(NULL)
 	0,                         /*ob_size*/
@@ -114,7 +149,7 @@ PyTypeObject EtermType = {
 	0,                         /*tp_as_mapping*/
 	0,                         /*tp_hash */
 	0,                         /*tp_call*/
-	0,                         /*tp_str*/
+	Eterm_str,                 /*tp_str*/
 	0,                         /*tp_getattro*/
 	0,                         /*tp_setattro*/
 	0,                         /*tp_as_buffer*/

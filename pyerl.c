@@ -748,6 +748,15 @@ pyerl_eterm_release(PyObject *self, PyObject *args)
 	Py_RETURN_NONE;
 }
 
+static PyObject *
+pyerl_eterm_statistics(PyObject *self, PyObject *args)
+{
+	unsigned long allocated;
+	unsigned long freed;
+	erl_eterm_statistics(&allocated, &freed);
+	return Py_BuildValue("(kk)", allocated, freed);
+}
+
 static PyMethodDef methods[] = {
 	{"init", pyerl_init, METH_VARARGS,
 	 "This function must be called before any of the others in the pyerl module in order to initialize the module functions. The arguments must be specified as init(0, 0)."
@@ -797,6 +806,7 @@ static PyMethodDef methods[] = {
 	{"size", pyerl_size, METH_VARARGS, NULL},
 
 	{"eterm_release", pyerl_eterm_release, METH_NOARGS, NULL},
+	{"eterm_statistics", pyerl_eterm_statistics, METH_NOARGS, NULL},
 	{NULL, NULL}
 };
 

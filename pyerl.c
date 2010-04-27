@@ -245,7 +245,6 @@ pyerl_element(PyObject *self, PyObject *args)
 	if(!(ret = (EtermObject *)EtermType.tp_new(&EtermType, NULL, NULL))){
 		return NULL;
 	}
-	printf("1\n");
 	etuple = (EtermObject *)tuple;
 	if(!etuple->term){
 		return NULL;
@@ -646,9 +645,11 @@ pyerl_print_term(PyObject *self, PyObject *args)
 	if (!PyArg_ParseTuple(args, "OO", &stream, &term)){
 		return NULL;
 	}
-	if(PyFile_Check(stream)){
-		fp = PyFile_AsFile(stream);
-	}else{
+	if(!PyFile_Check(stream)){
+		return NULL;
+	}
+	fp = PyFile_AsFile(stream);
+	if(!PyObject_TypeCheck(term, &EtermType)){
 		return NULL;
 	}
 	eterm = (EtermObject *)term;

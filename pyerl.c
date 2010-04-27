@@ -741,6 +741,12 @@ pyerl_size(PyObject *self, PyObject *args)
 	return Py_BuildValue("i", ret);
 }
 
+static PyObject *
+pyerl_eterm_release(PyObject *self, PyObject *args)
+{
+	erl_eterm_release();
+	Py_RETURN_NONE;
+}
 
 static PyMethodDef methods[] = {
 	{"init", pyerl_init, METH_VARARGS,
@@ -790,6 +796,7 @@ static PyMethodDef methods[] = {
 	{"print_term", pyerl_print_term, METH_VARARGS, NULL},
 	{"size", pyerl_size, METH_VARARGS, NULL},
 
+	{"eterm_release", pyerl_eterm_release, METH_NOARGS, NULL},
 	{NULL, NULL}
 };
 

@@ -265,64 +265,15 @@ Eterm_str(PyObject *self)
 {
 	PyObject *ret;
 	EtermObject *eterm = (EtermObject *)self;
-	char buf[256];
-	ETERM *head;
-	ETERM *tail;
+	ei_x_buff buf;
+	char *s = NULL;
+	int i = 0;
 
-	switch(ERL_TYPE(eterm->term)){
-	case ERL_UNDEF:
-		ret = PyString_FromString("UNDEF");
-		break;
-	case ERL_INTEGER:
-		ret = PyString_FromFormat("%d", ERL_INT_VALUE(eterm->term));
-		break;
-	case ERL_U_INTEGER:
-		ret = PyString_FromFormat("%u", ERL_INT_UVALUE(eterm->term));
-		break;
-	case ERL_ATOM:
-		ret = PyString_FromFormat("%s", ERL_ATOM_PTR(eterm->term));
-		break;
-	case ERL_PID:
-		ret = PyString_FromFormat(
-			"<%s.%d.%d>",
-			ERL_PID_NODE(eterm->term),
-			ERL_PID_NUMBER(eterm->term),
-			ERL_PID_SERIAL(eterm->term));
-		break;
-	case ERL_PORT:
-		ret = PyString_FromString("#Port");
-		break;
-	case ERL_REF:
-		ret = PyString_FromString("#Ref");
-		break;
-	case ERL_LIST:
-		/* TODO */
-		for(tail = eterm->term; tail; tail = erl_tl(tail)){
-			head = erl_hd(tail);
-		}
-		ret = PyString_FromString("[]");
-		break;
-	case ERL_EMPTY_LIST:
-		ret = PyString_FromString("[]");
-		break;
-	case ERL_TUPLE:
-		/* TODO */
-		ret = PyString_FromString("{}");
-		break;
-	case ERL_BINARY:
-		/* TODO: erl_print_term shows printable charactors. */
-		ret = PyString_FromString("#Bin");
-		break;
-	case ERL_FLOAT:
-		snprintf(buf, 256, "%f", ERL_FLOAT_VALUE(eterm->term));
-		ret = PyString_FromString(buf);
-		break;
-	case ERL_VARIABLE:
-		ret = PyString_FromFormat("\'%s\'", ERL_ATOM_PTR(eterm->term));
-		break;
-	default:
-		ret = PyString_FromString("ERROR");
-	}
+	ei_x_new(&buf);
+	ei_x_encode_term(&buf, eterm->term);
+	ei_s_print_term(&s, buf.buff, &i);
+	ret = PyString_FromString(s);
+	free(s);
 	return ret;
 }
 

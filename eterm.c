@@ -9,6 +9,7 @@ Eterm_dealloc(EtermObject *self)
 {
 	if(self->term){
 		erl_free_compound(self->term);
+		//erl_free_term(self->term);
 	}
 	self->ob_type->tp_free((PyObject*)self);
 }
@@ -102,6 +103,9 @@ Eterm_str(PyObject *self)
 {
 	PyObject *ret;
 	EtermObject *eterm = (EtermObject *)self;
+	char buf[256];
+	ETERM *head;
+	ETERM *tail;
 
 	switch(ERL_TYPE(eterm->term)){
 	case ERL_UNDEF:
@@ -125,6 +129,34 @@ Eterm_str(PyObject *self)
 		break;
 	case ERL_PORT:
 		ret = PyString_FromString("#Port");
+		break;
+	case ERL_REF:
+		ret = PyString_FromString("#Ref");
+		break;
+	case ERL_LIST:
+		/* TODO */
+		for(tail = eterm->term; tail; tail = erl_tl(tail)){
+			head = erl_hd(tail);
+		}
+		ret = PyString_FromString("[]");
+		break;
+	case ERL_EMPTY_LIST:
+		ret = PyString_FromString("[]");
+		break;
+	case ERL_TUPLE:
+		/* TODO */
+		ret = PyString_FromString("{}");
+		break;
+	case ERL_BINARY:
+		/* TODO: erl_print_term shows printable charactors. */
+		ret = PyString_FromString("#Bin");
+		break;
+	case ERL_FLOAT:
+		snprintf(buf, 256, "%f", ERL_FLOAT_VALUE(eterm->term));
+		ret = PyString_FromString(buf);
+		break;
+	case ERL_VARIABLE:
+		ret = PyString_FromFormat("\'%s\'", ERL_ATOM_PTR(eterm->term));
 		break;
 	default:
 		ret = PyString_FromString("ERROR");

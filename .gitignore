@@ -1,1 +1,4 @@
+*.so
+MANIFEST
 build/
+dist/

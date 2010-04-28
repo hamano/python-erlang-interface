@@ -3,8 +3,12 @@
 from distutils.core import setup, Extension
 
 setup(name = "PyErl",
-      version = "0.1.11",
+      version = "0.2",
       description = "Erlang Interface for Python",
+      long_description = '''
+PyErl is Erlang Interface for Python. which help you integrate
+programs written in Python and Erlang.
+''',
       author = "Tsukasa Hamano",
       author_email = "code@cuspy.org",
       url="http://github.com/hamano/python-erlang-interface",

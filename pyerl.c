@@ -174,8 +174,6 @@ pyerl_cons(PyObject *self, PyObject *args)
 	PyObject *tail;
 	EtermObject *ehead;
 	EtermObject *etail;
-	ETERM *chead;
-	ETERM *ctail;
 
 	if (!PyArg_ParseTuple(args, "OO", &head, &tail)){
 		return NULL;
@@ -195,11 +193,7 @@ pyerl_cons(PyObject *self, PyObject *args)
 		return NULL;
 	}
 
-	// deep copy
-	chead = erl_copy_term(ehead->term);
-	ctail = erl_copy_term(etail->term);
-
-	ret->term = erl_cons(chead, ctail);
+	ret->term = erl_cons(ehead->term, etail->term);
 	return Py_BuildValue("O", ret);
 }
 

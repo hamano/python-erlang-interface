@@ -807,7 +807,8 @@ static PyMethodDef methods[] = {
 void initpyerl(void)
 {
 	PyObject *m;
-	//EtermType.tp_new = PyType_GenericNew;
+
+	erl_init(NULL, 0);
 	if (PyType_Ready(&EtermType) < 0)
 		return;
 

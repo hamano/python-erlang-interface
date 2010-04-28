@@ -89,91 +89,151 @@ Eterm_print_term(EtermObject *self, PyObject *args)
 static PyObject *
 Eterm_is_integer(EtermObject *self)
 {
-	return ERL_IS_INTEGER(self->term)?Py_True:Py_False;
+	if(ERL_IS_INTEGER(self->term)){
+		Py_RETURN_TRUE;
+	}else{
+		Py_RETURN_FALSE;
+	}
 }
 
 static PyObject *
 Eterm_is_unsigned_integer(EtermObject *self)
 {
-	return ERL_IS_UNSIGNED_INTEGER(self->term)?Py_True:Py_False;
+	if(ERL_IS_UNSIGNED_INTEGER(self->term)){
+		Py_RETURN_TRUE;
+	}else{
+		Py_RETURN_FALSE;
+	}
 }
 
 static PyObject *
 Eterm_is_longlong(EtermObject *self)
 {
-	return ERL_IS_LONGLONG(self->term)?Py_True:Py_False;
+	if(ERL_IS_LONGLONG(self->term)){
+		Py_RETURN_TRUE;
+	}else{
+		Py_RETURN_FALSE;
+	}
 }
 
 static PyObject *
 Eterm_is_unsigned_longlong(EtermObject *self)
 {
-	return ERL_IS_UNSIGNED_LONGLONG(self->term)?Py_True:Py_False;
+	if(ERL_IS_UNSIGNED_LONGLONG(self->term)){
+		Py_RETURN_TRUE;
+	}else{
+		Py_RETURN_FALSE;
+	}
 }
 
 static PyObject *
 Eterm_is_float(EtermObject *self)
 {
-	return ERL_IS_FLOAT(self->term)?Py_True:Py_False;
+	if(ERL_IS_FLOAT(self->term)){
+		Py_RETURN_TRUE;
+	}else{
+		Py_RETURN_FALSE;
+	}
 }
 
 static PyObject *
 Eterm_is_atom(EtermObject *self)
 {
-	return ERL_IS_ATOM(self->term)?Py_True:Py_False;
+	if(ERL_IS_ATOM(self->term)){
+		Py_RETURN_TRUE;
+	}else{
+		Py_RETURN_FALSE;
+	}
 }
 
 static PyObject *
 Eterm_is_pid(EtermObject *self)
 {
-	return ERL_IS_PID(self->term)?Py_True:Py_False;
+	if(ERL_IS_PID(self->term)){
+		Py_RETURN_TRUE;
+	}else{
+		Py_RETURN_FALSE;
+	}
 }
 
 static PyObject *
 Eterm_is_port(EtermObject *self)
 {
-	return ERL_IS_PORT(self->term)?Py_True:Py_False;
+	if(ERL_IS_PORT(self->term)){
+		Py_RETURN_TRUE;
+	}else{
+		Py_RETURN_FALSE;
+	}
 }
 
 static PyObject *
 Eterm_is_ref(EtermObject *self)
 {
-	return ERL_IS_REF(self->term)?Py_True:Py_False;
+	if(ERL_IS_REF(self->term)){
+		Py_RETURN_TRUE;
+	}else{
+		Py_RETURN_FALSE;
+	}
 }
 
 static PyObject *
 Eterm_is_tuple(EtermObject *self)
 {
-	return ERL_IS_TUPLE(self->term)?Py_True:Py_False;
+	if(ERL_IS_TUPLE(self->term)){
+		Py_RETURN_TRUE;
+	}else{
+		Py_RETURN_FALSE;
+	}
 }
 
 static PyObject *
 Eterm_is_binary(EtermObject *self)
 {
-	return ERL_IS_BINARY(self->term)?Py_True:Py_False;
+	if(ERL_IS_BINARY(self->term)){
+		Py_RETURN_TRUE;
+	}else{
+		Py_RETURN_FALSE;
+	}
 }
 
 static PyObject *
 Eterm_is_nil(EtermObject *self)
 {
-	return ERL_IS_NIL(self->term)?Py_True:Py_False;
+	if(ERL_IS_NIL(self->term)){
+		Py_RETURN_TRUE;
+	}else{
+		Py_RETURN_FALSE;
+	}
 }
 
 static PyObject *
 Eterm_is_empty_list(EtermObject *self)
 {
-	return ERL_IS_EMPTY_LIST(self->term)?Py_True:Py_False;
+	if(ERL_IS_LIST(self->term)){
+		Py_RETURN_TRUE;
+	}else{
+		Py_RETURN_FALSE;
+	}
 }
 
 static PyObject *
 Eterm_is_cons(EtermObject *self)
 {
-	return ERL_IS_CONS(self->term)?Py_True:Py_False;
+	if(ERL_IS_CONS(self->term)){
+		Py_RETURN_TRUE;
+	}else{
+		Py_RETURN_FALSE;
+	}
 }
 
 static PyObject *
 Eterm_is_list(EtermObject *self)
 {
-	return ERL_IS_LIST(self->term)?Py_True:Py_False;
+	if(ERL_IS_LIST(self->term)){
+		Py_RETURN_TRUE;
+	}else{
+		Py_RETURN_FALSE;
+	}
 }
 
 static PyMethodDef Eterm_methods[] = {
@@ -197,7 +257,7 @@ static PyMethodDef Eterm_methods[] = {
 	{"is_empty_list", (PyCFunction)Eterm_is_empty_list, METH_NOARGS, NULL},
 	{"is_cons", (PyCFunction)Eterm_is_cons, METH_NOARGS, NULL},
 	{"is_list", (PyCFunction)Eterm_is_list, METH_NOARGS, NULL},
-    {NULL}  /* Sentinel */
+	{NULL}  /* Sentinel */
 };
 
 static PyObject *

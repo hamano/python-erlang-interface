@@ -1,0 +1,23 @@
+PyErl
+=====
+
+PyErl is Erlang Interface for Python. which help you integrate
+programs written in Python and Erlang.
+
+INSTALL
+-------
+
+ python setup.py build
+ python setup.py install
+
+EXAMPLE
+-------
+
+ import pyerl
+ pyerl.init()
+ atom = pyerl.mk_atom("hello")
+ print atom
+
+AUTHER
+------
+Tsukasa Hamano <code@cuspy.org>

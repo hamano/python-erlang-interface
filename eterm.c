@@ -86,15 +86,117 @@ Eterm_print_term(EtermObject *self, PyObject *args)
 	return Py_BuildValue("i", ret);
 }
 
+static PyObject *
+Eterm_is_integer(EtermObject *self)
+{
+	return ERL_IS_INTEGER(self->term)?Py_True:Py_False;
+}
+
+static PyObject *
+Eterm_is_unsigned_integer(EtermObject *self)
+{
+	return ERL_IS_UNSIGNED_INTEGER(self->term)?Py_True:Py_False;
+}
+
+static PyObject *
+Eterm_is_longlong(EtermObject *self)
+{
+	return ERL_IS_LONGLONG(self->term)?Py_True:Py_False;
+}
+
+static PyObject *
+Eterm_is_unsigned_longlong(EtermObject *self)
+{
+	return ERL_IS_UNSIGNED_LONGLONG(self->term)?Py_True:Py_False;
+}
+
+static PyObject *
+Eterm_is_float(EtermObject *self)
+{
+	return ERL_IS_FLOAT(self->term)?Py_True:Py_False;
+}
+
+static PyObject *
+Eterm_is_atom(EtermObject *self)
+{
+	return ERL_IS_ATOM(self->term)?Py_True:Py_False;
+}
+
+static PyObject *
+Eterm_is_pid(EtermObject *self)
+{
+	return ERL_IS_PID(self->term)?Py_True:Py_False;
+}
+
+static PyObject *
+Eterm_is_port(EtermObject *self)
+{
+	return ERL_IS_PORT(self->term)?Py_True:Py_False;
+}
+
+static PyObject *
+Eterm_is_ref(EtermObject *self)
+{
+	return ERL_IS_REF(self->term)?Py_True:Py_False;
+}
+
+static PyObject *
+Eterm_is_tuple(EtermObject *self)
+{
+	return ERL_IS_TUPLE(self->term)?Py_True:Py_False;
+}
+
+static PyObject *
+Eterm_is_binary(EtermObject *self)
+{
+	return ERL_IS_BINARY(self->term)?Py_True:Py_False;
+}
+
+static PyObject *
+Eterm_is_nil(EtermObject *self)
+{
+	return ERL_IS_NIL(self->term)?Py_True:Py_False;
+}
+
+static PyObject *
+Eterm_is_empty_list(EtermObject *self)
+{
+	return ERL_IS_EMPTY_LIST(self->term)?Py_True:Py_False;
+}
+
+static PyObject *
+Eterm_is_cons(EtermObject *self)
+{
+	return ERL_IS_CONS(self->term)?Py_True:Py_False;
+}
+
+static PyObject *
+Eterm_is_list(EtermObject *self)
+{
+	return ERL_IS_LIST(self->term)?Py_True:Py_False;
+}
+
 static PyMethodDef Eterm_methods[] = {
-/*
-	{"print_term", (PyCFunction)Eterm_print_term, METH_NOARGS,
-     "print EtermObject for debug"
-    },
-*/
 	{"print_term", (PyCFunction)Eterm_print_term, METH_VARARGS,
      "print EtermObject"
     },
+	{"is_integer", (PyCFunction)Eterm_is_integer, METH_NOARGS, NULL},
+	{"is_unsigned_integer", (PyCFunction)Eterm_is_unsigned_integer,
+	 METH_NOARGS, NULL},
+	{"is_longlong", (PyCFunction)Eterm_is_longlong, METH_NOARGS, NULL},
+	{"is_unsigned_longlong", (PyCFunction)Eterm_is_unsigned_longlong,
+	 METH_NOARGS, NULL},
+	{"is_float", (PyCFunction)Eterm_is_float, METH_NOARGS, NULL},
+	{"is_atom", (PyCFunction)Eterm_is_atom, METH_NOARGS, NULL},
+	{"is_pid", (PyCFunction)Eterm_is_pid, METH_NOARGS, NULL},
+	{"is_port", (PyCFunction)Eterm_is_port, METH_NOARGS, NULL},
+	{"is_ref", (PyCFunction)Eterm_is_ref, METH_NOARGS, NULL},
+	{"is_tuple", (PyCFunction)Eterm_is_tuple, METH_NOARGS, NULL},
+	{"is_binary", (PyCFunction)Eterm_is_binary, METH_NOARGS, NULL},
+	{"is_nil", (PyCFunction)Eterm_is_nil, METH_NOARGS, NULL},
+	{"is_empty_list", (PyCFunction)Eterm_is_empty_list, METH_NOARGS, NULL},
+	{"is_cons", (PyCFunction)Eterm_is_cons, METH_NOARGS, NULL},
+	{"is_list", (PyCFunction)Eterm_is_list, METH_NOARGS, NULL},
     {NULL}  /* Sentinel */
 };
 

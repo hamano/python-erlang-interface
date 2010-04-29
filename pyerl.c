@@ -752,11 +752,16 @@ pyerl_eterm_statistics(PyObject *self, PyObject *args)
 }
 
 static PyMethodDef methods[] = {
-	{"init", pyerl_init, METH_VARARGS,
-	 "This function must be called before any of the others in the pyerl module in order to initialize the module functions. The arguments must be specified as init(0, 0)."
-	},
-	{"set_compat_rel", pyerl_set_compat_rel, METH_VARARGS, NULL},
-	{"connect_init", pyerl_connect_init, METH_VARARGS, NULL},
+	{"init", pyerl_init, METH_VARARGS, "\
+This function must be called before any of the others in the\n\
+erl_interface library in order to initialize the library functions.\n\
+But It doesn't need to call this function in pyerl due to already\n\
+called at import."},
+	{"set_compat_rel", pyerl_set_compat_rel, METH_VARARGS, "\
+A call to set_compat_rel(release_number) sets the erl_interface\n\
+library in compatibility mode of release release_number."},
+	{"connect_init", pyerl_connect_init, METH_VARARGS, "\
+These functions initialize the erl_connect module."},
 	{"connect_xinit", pyerl_connect_xinit, METH_VARARGS, NULL},
 	{"connect", pyerl_connect, METH_VARARGS, NULL},
 	{"xconnect", pyerl_xconnect, METH_VARARGS, NULL},

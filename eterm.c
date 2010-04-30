@@ -8,8 +8,11 @@ static void
 Eterm_dealloc(EtermObject *self)
 {
 	if(self->term){
-		erl_free_compound(self->term);
-		//erl_free_term(self->term);
+		if(ERL_TYPE(self->term) & ERL_COMPOUND){
+			erl_free_compound(self->term);
+		}else{
+			erl_free_term(self->term);
+		}
 	}
 	self->ob_type->tp_free((PyObject*)self);
 }

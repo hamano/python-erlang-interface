@@ -105,6 +105,29 @@ pyerl_close_connection(PyObject *self, PyObject *args)
 }
 
 static PyObject *
+pyerl_send(PyObject *self, PyObject *args)
+{
+	int ret;
+	int fd;
+	PyObject *to;
+	PyObject *msg;
+	EtermObject *eto;
+	EtermObject *emsg;
+
+	if (!PyArg_ParseTuple(args, "iOO", &fd, &to, &msg)){
+		return NULL;
+	}
+	if(!PyObject_TypeCheck(to, &EtermType) ||
+	   !PyObject_TypeCheck(msg, &EtermType)){
+		return NULL;
+	}
+	eto = (EtermObject *)to;
+	emsg = (EtermObject *)msg;
+	ret = erl_send(fd, eto->term, emsg->term);
+	return Py_BuildValue("i", ret);
+}
+
+static PyObject *
 pyerl_publish(PyObject *self, PyObject *args)
 {
 	int ret;
@@ -775,6 +798,7 @@ These functions initialize the erl_connect module."},
 	{"connect", pyerl_connect, METH_VARARGS, NULL},
 	{"xconnect", pyerl_xconnect, METH_VARARGS, NULL},
 	{"close_connection", pyerl_close_connection, METH_VARARGS, NULL},
+	{"send", pyerl_send, METH_VARARGS, NULL},
 
 	{"publish", pyerl_publish, METH_VARARGS, NULL},
 	{"unpublish", pyerl_unpublish, METH_VARARGS, NULL},

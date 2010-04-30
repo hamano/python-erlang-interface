@@ -61,7 +61,6 @@ pyerl_connect_xinit(PyObject *self, PyObject *args)
 		return NULL;
 	}
 	ia.s_addr = inet_addr(addr);
-printf("go\n");
 	ret = erl_connect_xinit(host ,alive, node, &ia, cookie, creation);
 	return Py_BuildValue("i", ret);
 }
@@ -117,6 +116,9 @@ pyerl_xreceive_msg(PyObject *self, PyObject *args)
 	if(!PyArg_ParseTuple(args, "i", &fd)){
 		return NULL;
 	}
+	if(fd < 0){
+		return NULL;
+	}
 	if(!(msg = (EtermObject *)EtermType.tp_new(&EtermType, NULL, NULL))){
 		return NULL;
 	}
@@ -135,7 +137,10 @@ pyerl_send(PyObject *self, PyObject *args)
 	EtermObject *eto;
 	EtermObject *emsg;
 
-	if (!PyArg_ParseTuple(args, "iOO", &fd, &to, &msg)){
+	if(!PyArg_ParseTuple(args, "iOO", &fd, &to, &msg)){
+		return NULL;
+	}
+	if(fd < 0){
 		return NULL;
 	}
 	if(!PyObject_TypeCheck(to, &EtermType) ||
@@ -157,7 +162,10 @@ pyerl_reg_send(PyObject *self, PyObject *args)
 	PyObject *msg;
 	EtermObject *emsg;
 
-	if (!PyArg_ParseTuple(args, "isO", &fd, &to, &msg)){
+	if(!PyArg_ParseTuple(args, "isO", &fd, &to, &msg)){
+		return NULL;
+	}
+	if(fd < 0){
 		return NULL;
 	}
 	if(!PyObject_TypeCheck(msg, &EtermType)){
@@ -166,6 +174,27 @@ pyerl_reg_send(PyObject *self, PyObject *args)
 	emsg = (EtermObject *)msg;
 	ret = erl_reg_send(fd, to, emsg->term);
 	return Py_BuildValue("i", ret);
+}
+
+static PyObject *
+pyerl_rpc(PyObject *self, PyObject *args)
+{
+	EtermObject *ret;
+	int fd;
+	char *mod, *fun;
+	EtermObject *arg;
+
+	if(!PyArg_ParseTuple(args, "issO", &fd, &mod, &fun, &arg)){
+		return NULL;
+	}
+	if(!PyObject_TypeCheck(args, &EtermType)){
+		return NULL;
+	}
+	if(!(ret = (EtermObject *)EtermType.tp_new(&EtermType, NULL, NULL))){
+		return NULL;
+	}
+	ret->term = erl_rpc(fd, mod, fun, arg->term);
+	return (PyObject *)ret;
 }
 
 static PyObject *
@@ -842,6 +871,7 @@ These functions initialize the erl_connect module."},
 	{"xreceive_msg", pyerl_xreceive_msg, METH_VARARGS, NULL},
 	{"send", pyerl_send, METH_VARARGS, NULL},
 	{"reg_send", pyerl_reg_send, METH_VARARGS, NULL},
+	{"reg_rpc", pyerl_rpc, METH_VARARGS, NULL},
 
 	{"publish", pyerl_publish, METH_VARARGS, NULL},
 	{"unpublish", pyerl_unpublish, METH_VARARGS, NULL},

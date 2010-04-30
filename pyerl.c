@@ -128,6 +128,26 @@ pyerl_send(PyObject *self, PyObject *args)
 }
 
 static PyObject *
+pyerl_reg_send(PyObject *self, PyObject *args)
+{
+	int ret;
+	int fd;
+	char *to;
+	PyObject *msg;
+	EtermObject *emsg;
+
+	if (!PyArg_ParseTuple(args, "isO", &fd, &to, &msg)){
+		return NULL;
+	}
+	if(!PyObject_TypeCheck(msg, &EtermType)){
+		return NULL;
+	}
+	emsg = (EtermObject *)msg;
+	ret = erl_reg_send(fd, to, emsg->term);
+	return Py_BuildValue("i", ret);
+}
+
+static PyObject *
 pyerl_publish(PyObject *self, PyObject *args)
 {
 	int ret;
@@ -799,6 +819,7 @@ These functions initialize the erl_connect module."},
 	{"xconnect", pyerl_xconnect, METH_VARARGS, NULL},
 	{"close_connection", pyerl_close_connection, METH_VARARGS, NULL},
 	{"send", pyerl_send, METH_VARARGS, NULL},
+	{"reg_send", pyerl_reg_send, METH_VARARGS, NULL},
 
 	{"publish", pyerl_publish, METH_VARARGS, NULL},
 	{"unpublish", pyerl_unpublish, METH_VARARGS, NULL},

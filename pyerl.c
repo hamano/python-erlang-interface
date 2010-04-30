@@ -192,9 +192,11 @@ pyerl_cons(PyObject *self, PyObject *args)
 	if(!ehead->term || !etail->term){
 		return NULL;
 	}
-
-	ret->term = erl_cons(ehead->term, etail->term);
-	return Py_BuildValue("O", ret);
+	if(!(ret->term = erl_cons(ehead->term, etail->term))){
+		EtermType.tp_dealloc((PyObject *)ret);
+		return NULL;
+	}
+	return (PyObject *)ret;
 }
 
 static PyObject *
@@ -210,6 +212,7 @@ pyerl_copy_term(PyObject *self, PyObject *args)
 	if(!PyObject_TypeCheck(term, &EtermType)){
 		return NULL;
 	}
+
 	if(!(ret = (EtermObject *)EtermType.tp_new(&EtermType, NULL, NULL))){
 		return NULL;
 	}
@@ -217,8 +220,11 @@ pyerl_copy_term(PyObject *self, PyObject *args)
 	if(!eterm->term){
 		return NULL;
 	}
-	ret->term = erl_copy_term(eterm->term);
-	return Py_BuildValue("O", ret);
+	if(!(ret->term = erl_copy_term(eterm->term))){
+		EtermType.tp_dealloc((PyObject *)ret);
+		return NULL;
+	}
+	return (PyObject *)ret;
 }
 
 static PyObject *

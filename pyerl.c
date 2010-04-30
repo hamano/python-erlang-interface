@@ -40,8 +40,9 @@ pyerl_connect_init(PyObject *self, PyObject *args)
 	char *cookie;
 	short creation;
 
-	if (!PyArg_ParseTuple(args, "isi", &number, &cookie, &creation))
+	if(!PyArg_ParseTuple(args, "ish", &number, &cookie, &creation)){
 		return NULL;
+	}
 	ret = erl_connect_init(number, cookie, creation);
 	return Py_BuildValue("i", ret);
 }
@@ -55,10 +56,12 @@ pyerl_connect_xinit(PyObject *self, PyObject *args)
 	short creation;
 	struct in_addr ia;
 
-	if (!PyArg_ParseTuple(args, "sssssi",
-						  &host, &alive, &node, &addr, &cookie, &creation))
+	if (!PyArg_ParseTuple(args, "sssssh",
+						  &host, &alive, &node, &addr, &cookie, &creation)){
 		return NULL;
+	}
 	ia.s_addr = inet_addr(addr);
+printf("go\n");
 	ret = erl_connect_xinit(host ,alive, node, &ia, cookie, creation);
 	return Py_BuildValue("i", ret);
 }

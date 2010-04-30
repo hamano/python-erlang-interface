@@ -128,5 +128,21 @@ class PyErlTest(unittest.TestCase):
         # Cannot convert string, I don't know why.
         # self.assertEqual(str(eterm), "var");
 
+    def test_copy_term(self):
+        atom = pyerl.mk_atom("atom")
+        eterm = pyerl.copy_term(atom)
+        self.assertEqual(eterm.type, pyerl.ATOM);
+        self.assertEqual(eterm.is_atom(), True);
+        self.assertEqual(str(eterm), "atom");
+
+    def test_cons(self):
+        atom1 = pyerl.mk_atom("atom1")
+        atom2 = pyerl.mk_atom("atom2")
+        eterm = pyerl.cons(atom1, atom2)
+        self.assertEqual(eterm.type, pyerl.CONS);
+        self.assertEqual(eterm.is_cons(), True);
+        self.assertEqual(eterm.is_list(), True);
+        self.assertEqual(str(eterm), "[atom1 | atom2]");
+
 if __name__ == '__main__':
     unittest.main()

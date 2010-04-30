@@ -56,7 +56,7 @@ pyerl_connect_xinit(PyObject *self, PyObject *args)
 	short creation;
 	struct in_addr ia;
 
-	if (!PyArg_ParseTuple(args, "sssssh",
+	if(!PyArg_ParseTuple(args, "sssssh",
 						  &host, &alive, &node, &addr, &cookie, &creation)){
 		return NULL;
 	}
@@ -71,7 +71,7 @@ pyerl_connect(PyObject *self, PyObject *args)
 	int ret;
 	char *node;
 
-	if (!PyArg_ParseTuple(args, "s", &node))
+	if(!PyArg_ParseTuple(args, "s", &node))
 		return NULL;
 	ret = erl_connect(node);
 	return Py_BuildValue("i", ret);
@@ -84,7 +84,7 @@ pyerl_xconnect(PyObject *self, PyObject *args)
 	char *addr, *alive;
 	struct in_addr ia;
 
-	if (!PyArg_ParseTuple(args, "ss", &addr, &alive))
+	if(!PyArg_ParseTuple(args, "ss", &addr, &alive))
 		return NULL;
 	ia.s_addr = inet_addr(addr);
 	ret = erl_xconnect(&ia, alive);
@@ -124,6 +124,7 @@ pyerl_xreceive_msg(PyObject *self, PyObject *args)
 	}
 	ret = erl_xreceive_msg(fd, &buf, &size, &emsg);
 	msg->term = erl_copy_term(emsg.msg);
+	/* TODO: bad return */
 	return Py_BuildValue("iO", ret, msg);
 }
 
@@ -215,7 +216,7 @@ pyerl_unpublish(PyObject *self, PyObject *args)
 	int ret;
 	char *alive;
 
-	if (!PyArg_ParseTuple(args, "s", &alive))
+	if(!PyArg_ParseTuple(args, "s", &alive))
 		return NULL;
 	ret = erl_unpublish(alive);
 	return Py_BuildValue("i", ret);
@@ -271,13 +272,11 @@ pyerl_cons(PyObject *self, PyObject *args)
 	EtermObject *ehead;
 	EtermObject *etail;
 
-	if (!PyArg_ParseTuple(args, "OO", &head, &tail)){
+	if(!PyArg_ParseTuple(args, "OO", &head, &tail)){
 		return NULL;
 	}
-	if(!PyObject_TypeCheck(head, &EtermType)){
-		return NULL;
-	}
-	if(!PyObject_TypeCheck(tail, &EtermType)){
+	if(!PyObject_TypeCheck(head, &EtermType)||
+	   !PyObject_TypeCheck(tail, &EtermType)){
 		return NULL;
 	}
 	if(!(ret = (EtermObject *)EtermType.tp_new(&EtermType, NULL, NULL))){
@@ -302,7 +301,7 @@ pyerl_copy_term(PyObject *self, PyObject *args)
 	PyObject *term;
 	EtermObject *eterm;
 
-	if (!PyArg_ParseTuple(args, "O", &term)){
+	if(!PyArg_ParseTuple(args, "O", &term)){
 		return NULL;
 	}
 	if(!PyObject_TypeCheck(term, &EtermType)){
@@ -332,7 +331,7 @@ pyerl_element(PyObject *self, PyObject *args)
 	EtermObject *etuple;
 	int size;
 
-	if (!PyArg_ParseTuple(args, "iO", &position, &tuple)){
+	if(!PyArg_ParseTuple(args, "iO", &position, &tuple)){
 		return NULL;
 	}
 	if(!PyObject_TypeCheck(tuple, &EtermType)){
@@ -360,7 +359,7 @@ pyerl_hd(PyObject *self, PyObject *args)
 	PyObject *term;
 	EtermObject *eterm;
 
-	if (!PyArg_ParseTuple(args, "O", &term)){
+	if(!PyArg_ParseTuple(args, "O", &term)){
 		return NULL;
 	}
 	if(!PyObject_TypeCheck(term, &EtermType)){
@@ -388,7 +387,7 @@ pyerl_tl(PyObject *self, PyObject *args)
 	PyObject *term;
 	EtermObject *eterm;
 
-	if (!PyArg_ParseTuple(args, "O", &term)){
+	if(!PyArg_ParseTuple(args, "O", &term)){
 		return NULL;
 	}
 	if(!PyObject_TypeCheck(term, &EtermType)){
@@ -415,7 +414,7 @@ pyerl_mk_atom(PyObject *self, PyObject *args)
 	EtermObject *eterm;
 	const char *string;
 
-	if (!PyArg_ParseTuple(args, "s", &string)){
+	if(!PyArg_ParseTuple(args, "s", &string)){
 		return NULL;
 	}
 	if(!(eterm = (EtermObject *)EtermType.tp_new(&EtermType, NULL, NULL))){
@@ -435,7 +434,7 @@ pyerl_mk_binary(PyObject *self, PyObject *args)
 	const char *bptr;
 	int size;
 
-	if (!PyArg_ParseTuple(args, "s#", &bptr, &size)){
+	if(!PyArg_ParseTuple(args, "s#", &bptr, &size)){
 		return NULL;
 	}
 	if(!(eterm = (EtermObject *)EtermType.tp_new(&EtermType, NULL, NULL))){
@@ -470,7 +469,7 @@ pyerl_mk_estring(PyObject *self, PyObject *args)
 	const char *string;
 	int len;
 
-	if (!PyArg_ParseTuple(args, "s#", &string, &len)){
+	if(!PyArg_ParseTuple(args, "s#", &string, &len)){
 		return NULL;
 	}
 	if(!(eterm = (EtermObject *)EtermType.tp_new(&EtermType, NULL, NULL))){
@@ -489,7 +488,7 @@ pyerl_mk_float(PyObject *self, PyObject *args)
 	EtermObject *eterm;
 	double f;
 
-	if (!PyArg_ParseTuple(args, "d", &f)){
+	if(!PyArg_ParseTuple(args, "d", &f)){
 		return NULL;
 	}
 	if(!(eterm = (EtermObject *)EtermType.tp_new(&EtermType, NULL, NULL))){
@@ -508,7 +507,7 @@ pyerl_mk_int(PyObject *self, PyObject *args)
 	EtermObject *eterm;
 	int n;
 
-	if (!PyArg_ParseTuple(args, "i", &n)){
+	if(!PyArg_ParseTuple(args, "i", &n)){
 		return NULL;
 	}
 	if(!(eterm = (EtermObject *)EtermType.tp_new(&EtermType, NULL, NULL))){
@@ -527,7 +526,7 @@ pyerl_mk_longlong(PyObject *self, PyObject *args)
 	EtermObject *eterm;
 	long long ll;
 
-	if (!PyArg_ParseTuple(args, "L", &ll)){
+	if(!PyArg_ParseTuple(args, "L", &ll)){
 		return NULL;
 	}
 	if(!(eterm = (EtermObject *)EtermType.tp_new(&EtermType, NULL, NULL))){
@@ -551,7 +550,7 @@ pyerl_mk_list(PyObject *self, PyObject *args)
 	EtermObject *eobj;
 	ETERM **eterm_array;
 
-	if (!PyArg_ParseTuple(args, "O", &array)){
+	if(!PyArg_ParseTuple(args, "O", &array)){
 		return NULL;
 	}
 	if(!PyList_Check(array)){
@@ -590,7 +589,7 @@ pyerl_mk_pid(PyObject *self, PyObject *args)
 	unsigned int serial;
 	unsigned int creation;
 
-	if (!PyArg_ParseTuple(args, "sIII", &node, &number, &serial, &creation)){
+	if(!PyArg_ParseTuple(args, "sIII", &node, &number, &serial, &creation)){
 		return NULL;
 	}
 	if(!(eterm = (EtermObject *)EtermType.tp_new(&EtermType, NULL, NULL))){
@@ -611,7 +610,7 @@ pyerl_mk_port(PyObject *self, PyObject *args)
 	unsigned int number;
 	unsigned int creation;
 
-	if (!PyArg_ParseTuple(args, "sII", &node, &number, &creation)){
+	if(!PyArg_ParseTuple(args, "sII", &node, &number, &creation)){
 		return NULL;
 	}
 	if(!(eterm = (EtermObject *)EtermType.tp_new(&EtermType, NULL, NULL))){
@@ -632,7 +631,7 @@ pyerl_mk_ref(PyObject *self, PyObject *args)
 	unsigned int number;
 	unsigned int creation;
 
-	if (!PyArg_ParseTuple(args, "sII", &node, &number, &creation)){
+	if(!PyArg_ParseTuple(args, "sII", &node, &number, &creation)){
 		return NULL;
 	}
 	if(!(eterm = (EtermObject *)EtermType.tp_new(&EtermType, NULL, NULL))){
@@ -653,7 +652,7 @@ pyerl_mk_long_ref(PyObject *self, PyObject *args)
 	unsigned int n1, n2, n3;
 	unsigned int creation;
 
-	if (!PyArg_ParseTuple(args, "sIIII", &node, &n1, &n2, &n3, &creation)){
+	if(!PyArg_ParseTuple(args, "sIIII", &node, &n1, &n2, &n3, &creation)){
 		return NULL;
 	}
 	if(!(eterm = (EtermObject *)EtermType.tp_new(&EtermType, NULL, NULL))){
@@ -672,7 +671,7 @@ pyerl_mk_string(PyObject *self, PyObject *args)
 	EtermObject *eterm;
 	const char *string;
 
-	if (!PyArg_ParseTuple(args, "s", &string)){
+	if(!PyArg_ParseTuple(args, "s", &string)){
 		return NULL;
 	}
 	if(!(eterm = (EtermObject *)EtermType.tp_new(&EtermType, NULL, NULL))){
@@ -696,7 +695,7 @@ pyerl_mk_tuple(PyObject *self, PyObject *args)
 	EtermObject *eobj;
 	ETERM **eterm_array;
 
-	if (!PyArg_ParseTuple(args, "O", &array)){
+	if(!PyArg_ParseTuple(args, "O", &array)){
 		return NULL;
 	}
 	if(!PyTuple_Check(array)){
@@ -734,7 +733,7 @@ pyerl_mk_uint(PyObject *self, PyObject *args)
 	EtermObject *eterm;
 	unsigned int n;
 
-	if (!PyArg_ParseTuple(args, "I", &n)){
+	if(!PyArg_ParseTuple(args, "I", &n)){
 		return NULL;
 	}
 	if(!(eterm = (EtermObject *)EtermType.tp_new(&EtermType, NULL, NULL))){
@@ -753,7 +752,7 @@ pyerl_mk_ulonglong(PyObject *self, PyObject *args)
 	EtermObject *eterm;
 	unsigned long long ll;
 
-	if (!PyArg_ParseTuple(args, "K", &ll)){
+	if(!PyArg_ParseTuple(args, "K", &ll)){
 		return NULL;
 	}
 	if(!(eterm = (EtermObject *)EtermType.tp_new(&EtermType, NULL, NULL))){
@@ -772,7 +771,7 @@ pyerl_mk_var(PyObject *self, PyObject *args)
 	EtermObject *eterm;
 	const char *name;
 
-	if (!PyArg_ParseTuple(args, "s", &name)){
+	if(!PyArg_ParseTuple(args, "s", &name)){
 		return NULL;
 	}
 	if(!(eterm = (EtermObject *)EtermType.tp_new(&EtermType, NULL, NULL))){
@@ -794,7 +793,7 @@ pyerl_print_term(PyObject *self, PyObject *args)
 	EtermObject *eterm;
 	FILE *fp = stdout;
 
-	if (!PyArg_ParseTuple(args, "OO", &stream, &term)){
+	if(!PyArg_ParseTuple(args, "OO", &stream, &term)){
 		return NULL;
 	}
 	if(!PyFile_Check(stream)){
@@ -821,7 +820,7 @@ pyerl_size(PyObject *self, PyObject *args)
 	PyObject *term = NULL;
 	EtermObject *eterm;
 
-	if (!PyArg_ParseTuple(args, "O", &term)){
+	if(!PyArg_ParseTuple(args, "O", &term)){
 		return NULL;
 	}
 
@@ -863,15 +862,28 @@ called at import."},
 A call to set_compat_rel(release_number) sets the erl_interface\n\
 library in compatibility mode of release release_number."},
 	{"connect_init", pyerl_connect_init, METH_VARARGS, "\
-These functions initialize the erl_connect module."},
-	{"connect_xinit", pyerl_connect_xinit, METH_VARARGS, NULL},
-	{"connect", pyerl_connect, METH_VARARGS, NULL},
-	{"xconnect", pyerl_xconnect, METH_VARARGS, NULL},
-	{"close_connection", pyerl_close_connection, METH_VARARGS, NULL},
+These functions initialize the erl_connect module.\n\
+connect_init() provides an alternative interface which does not\n\
+require as much information from the caller. Instead, connect_init()\n\
+uses gethostbyname() to obtain default values."},
+	{"connect_xinit", pyerl_connect_xinit, METH_VARARGS, "\
+These functions initialize the erl_connect module.\n\
+connect_xinit() stores for later use information about the node's host\n\
+name host, alive name alive, node name node, IP address addr, cookie\n\
+cookie, and creation number creation."},
+	{"connect", pyerl_connect, METH_VARARGS, "\
+These functions set up a connection to an Erlang node."},
+	{"xconnect", pyerl_xconnect, METH_VARARGS, "\
+These functions set up a connection to an Erlang node."},
+	{"close_connection", pyerl_close_connection, METH_VARARGS, "\
+This function closes an open connection to an Erlang node."},
 	{"xreceive_msg", pyerl_xreceive_msg, METH_VARARGS, NULL},
-	{"send", pyerl_send, METH_VARARGS, NULL},
-	{"reg_send", pyerl_reg_send, METH_VARARGS, NULL},
-	{"reg_rpc", pyerl_rpc, METH_VARARGS, NULL},
+	{"send", pyerl_send, METH_VARARGS, "\
+This function sends an Erlang term to a process."},
+	{"reg_send", pyerl_reg_send, METH_VARARGS, "\
+This function sends an Erlang term to a registered process."},
+	{"rpc", pyerl_rpc, METH_VARARGS, "\
+These functions support calling Erlang functions on remote nodes. "},
 
 	{"publish", pyerl_publish, METH_VARARGS, NULL},
 	{"unpublish", pyerl_unpublish, METH_VARARGS, NULL},

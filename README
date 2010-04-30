@@ -13,9 +13,13 @@ INSTALL
 EXAMPLE
 -------
 
+* make erlang terms
  import pyerl
  atom = pyerl.mk_atom("hello")
- print atom
+ string = pyerl.mk_string("world")
+ int = pyerl.mk_int(-1)
+ list = pyerl.mk_list([atom, string, int])
+ print list
 
 AUTHER
 ------

@@ -3,7 +3,7 @@
 from distutils.core import setup, Extension
 
 setup(name = "PyErl",
-      version = "0.3",
+      version = "0.4",
       description = "Erlang Interface for Python",
       long_description = '''
 PyErl is Erlang Interface for Python. which help you integrate

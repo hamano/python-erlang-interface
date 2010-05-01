@@ -188,7 +188,10 @@ pyerl_rpc(PyObject *self, PyObject *args)
 	if(!PyArg_ParseTuple(args, "issO", &fd, &mod, &fun, &arg)){
 		return NULL;
 	}
-	if(!PyObject_TypeCheck(args, &EtermType)){
+	if(fd < 0){
+		return NULL;
+	}
+	if(!PyObject_TypeCheck(arg, &EtermType)){
 		return NULL;
 	}
 	if(!(ret = (EtermObject *)EtermType.tp_new(&EtermType, NULL, NULL))){

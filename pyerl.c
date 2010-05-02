@@ -770,7 +770,7 @@ pyerl_mk_longlong(PyObject *self, PyObject *args)
 }
 #endif
 
-#ifdef ERL__LONGLONG
+#ifdef ERL_U_LONGLONG
 static PyObject *
 pyerl_mk_ulonglong(PyObject *self, PyObject *args)
 {

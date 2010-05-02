@@ -524,25 +524,6 @@ pyerl_mk_int(PyObject *self, PyObject *args)
 }
 
 static PyObject *
-pyerl_mk_longlong(PyObject *self, PyObject *args)
-{
-	EtermObject *eterm;
-	long long ll;
-
-	if(!PyArg_ParseTuple(args, "L", &ll)){
-		return NULL;
-	}
-	if(!(eterm = (EtermObject *)EtermType.tp_new(&EtermType, NULL, NULL))){
-		return NULL;
-	}
-	if(!(eterm->term = erl_mk_longlong(ll))){
-		EtermType.tp_dealloc((PyObject *)eterm);
-		return NULL;
-	}
-	return (PyObject *)eterm;
-}
-
-static PyObject *
 pyerl_mk_list(PyObject *self, PyObject *args)
 {
 	EtermObject *eterm;
@@ -750,25 +731,6 @@ pyerl_mk_uint(PyObject *self, PyObject *args)
 }
 
 static PyObject *
-pyerl_mk_ulonglong(PyObject *self, PyObject *args)
-{
-	EtermObject *eterm;
-	unsigned long long ll;
-
-	if(!PyArg_ParseTuple(args, "K", &ll)){
-		return NULL;
-	}
-	if(!(eterm = (EtermObject *)EtermType.tp_new(&EtermType, NULL, NULL))){
-		return NULL;
-	}
-	if(!(eterm->term = erl_mk_ulonglong(ll))){
-		EtermType.tp_dealloc((PyObject *)eterm);
-		return NULL;
-	}
-	return (PyObject *)eterm;
-}
-
-static PyObject *
 pyerl_mk_var(PyObject *self, PyObject *args)
 {
 	EtermObject *eterm;
@@ -786,6 +748,48 @@ pyerl_mk_var(PyObject *self, PyObject *args)
 	}
 	return (PyObject *)eterm;
 }
+
+#ifdef ERL_LONGLONG
+static PyObject *
+pyerl_mk_longlong(PyObject *self, PyObject *args)
+{
+	EtermObject *eterm;
+	long long ll;
+
+	if(!PyArg_ParseTuple(args, "L", &ll)){
+		return NULL;
+	}
+	if(!(eterm = (EtermObject *)EtermType.tp_new(&EtermType, NULL, NULL))){
+		return NULL;
+	}
+	if(!(eterm->term = erl_mk_longlong(ll))){
+		EtermType.tp_dealloc((PyObject *)eterm);
+		return NULL;
+	}
+	return (PyObject *)eterm;
+}
+#endif
+
+#ifdef ERL__LONGLONG
+static PyObject *
+pyerl_mk_ulonglong(PyObject *self, PyObject *args)
+{
+	EtermObject *eterm;
+	unsigned long long ll;
+
+	if(!PyArg_ParseTuple(args, "K", &ll)){
+		return NULL;
+	}
+	if(!(eterm = (EtermObject *)EtermType.tp_new(&EtermType, NULL, NULL))){
+		return NULL;
+	}
+	if(!(eterm->term = erl_mk_ulonglong(ll))){
+		EtermType.tp_dealloc((PyObject *)eterm);
+		return NULL;
+	}
+	return (PyObject *)eterm;
+}
+#endif
 
 static PyObject *
 pyerl_print_term(PyObject *self, PyObject *args)
@@ -910,7 +914,6 @@ These functions support calling Erlang functions on remote nodes. "},
 	{"mk_estring", pyerl_mk_estring, METH_VARARGS, NULL},
 	{"mk_float", pyerl_mk_float, METH_VARARGS, NULL},
 	{"mk_int", pyerl_mk_int, METH_VARARGS, NULL},
-	{"mk_longlong", pyerl_mk_longlong, METH_VARARGS, NULL},
 	{"mk_list", pyerl_mk_list, METH_VARARGS, NULL},
 	{"mk_pid", pyerl_mk_pid, METH_VARARGS, NULL},
 	{"mk_port", pyerl_mk_port, METH_VARARGS, NULL},
@@ -919,8 +922,13 @@ These functions support calling Erlang functions on remote nodes. "},
 	{"mk_string", pyerl_mk_string, METH_VARARGS, NULL},
 	{"mk_tuple", pyerl_mk_tuple, METH_VARARGS, NULL},
 	{"mk_uint", pyerl_mk_uint, METH_VARARGS, NULL},
-	{"mk_ulonglong", pyerl_mk_ulonglong, METH_VARARGS, NULL},
 	{"mk_var", pyerl_mk_var, METH_VARARGS, NULL},
+#ifdef ERL_LONGLONG
+	{"mk_longlong", pyerl_mk_longlong, METH_VARARGS, NULL},
+#endif
+#ifdef ERL_U_LONGLONG
+	{"mk_ulonglong", pyerl_mk_ulonglong, METH_VARARGS, NULL},
+#endif
 
 	{"print_term", pyerl_print_term, METH_VARARGS, NULL},
 	{"size", pyerl_size, METH_VARARGS, NULL},
@@ -964,6 +972,10 @@ void initpyerl(void)
 	PyModule_AddIntConstant(m, "U_SMALL_BIG", ERL_U_SMALL_BIG);
 	PyModule_AddIntConstant(m, "FUNCTION", ERL_FUNCTION);
 	PyModule_AddIntConstant(m, "BIG", ERL_BIG);
+#ifdef ERL_LONGLONG
 	PyModule_AddIntConstant(m, "LONGLONG", ERL_LONGLONG);
+#endif
+#ifdef ERL_U_LONGLONG
 	PyModule_AddIntConstant(m, "U_LONGLONG", ERL_U_LONGLONG);
+#endif
 }

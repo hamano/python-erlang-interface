@@ -110,26 +110,6 @@ Eterm_is_unsigned_integer(EtermObject *self)
 }
 
 static PyObject *
-Eterm_is_longlong(EtermObject *self)
-{
-	if(ERL_IS_LONGLONG(self->term)){
-		Py_RETURN_TRUE;
-	}else{
-		Py_RETURN_FALSE;
-	}
-}
-
-static PyObject *
-Eterm_is_unsigned_longlong(EtermObject *self)
-{
-	if(ERL_IS_UNSIGNED_LONGLONG(self->term)){
-		Py_RETURN_TRUE;
-	}else{
-		Py_RETURN_FALSE;
-	}
-}
-
-static PyObject *
 Eterm_is_float(EtermObject *self)
 {
 	if(ERL_IS_FLOAT(self->term)){
@@ -239,15 +219,36 @@ Eterm_is_list(EtermObject *self)
 	}
 }
 
+#ifdef ERL_IS_LONGLONG
+static PyObject *
+Eterm_is_longlong(EtermObject *self)
+{
+	if(ERL_IS_LONGLONG(self->term)){
+		Py_RETURN_TRUE;
+	}else{
+		Py_RETURN_FALSE;
+	}
+}
+#endif
+
+#ifdef ERL_IS_U_LONGLONG
+static PyObject *
+Eterm_is_unsigned_longlong(EtermObject *self)
+{
+	if(ERL_IS_UNSIGNED_LONGLONG(self->term)){
+		Py_RETURN_TRUE;
+	}else{
+		Py_RETURN_FALSE;
+	}
+}
+#endif
+
 static PyMethodDef Eterm_methods[] = {
 	{"print_term", (PyCFunction)Eterm_print_term, METH_VARARGS,
      "print EtermObject"
     },
 	{"is_integer", (PyCFunction)Eterm_is_integer, METH_NOARGS, NULL},
 	{"is_unsigned_integer", (PyCFunction)Eterm_is_unsigned_integer,
-	 METH_NOARGS, NULL},
-	{"is_longlong", (PyCFunction)Eterm_is_longlong, METH_NOARGS, NULL},
-	{"is_unsigned_longlong", (PyCFunction)Eterm_is_unsigned_longlong,
 	 METH_NOARGS, NULL},
 	{"is_float", (PyCFunction)Eterm_is_float, METH_NOARGS, NULL},
 	{"is_atom", (PyCFunction)Eterm_is_atom, METH_NOARGS, NULL},
@@ -260,6 +261,13 @@ static PyMethodDef Eterm_methods[] = {
 	{"is_empty_list", (PyCFunction)Eterm_is_empty_list, METH_NOARGS, NULL},
 	{"is_cons", (PyCFunction)Eterm_is_cons, METH_NOARGS, NULL},
 	{"is_list", (PyCFunction)Eterm_is_list, METH_NOARGS, NULL},
+#ifdef ERL_IS_LONGLONG
+	{"is_longlong", (PyCFunction)Eterm_is_longlong, METH_NOARGS, NULL},
+#endif
+#ifdef ERL_IS_U_LONGLONG
+	{"is_unsigned_longlong", (PyCFunction)Eterm_is_unsigned_longlong,
+	 METH_NOARGS, NULL},
+#endif
 	{NULL}  /* Sentinel */
 };
 

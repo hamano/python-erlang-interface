@@ -231,7 +231,7 @@ Eterm_is_longlong(EtermObject *self)
 }
 #endif
 
-#ifdef ERL_IS_U_LONGLONG
+#ifdef ERL_IS_UNSIGNED_LONGLONG
 static PyObject *
 Eterm_is_unsigned_longlong(EtermObject *self)
 {
@@ -264,7 +264,7 @@ static PyMethodDef Eterm_methods[] = {
 #ifdef ERL_IS_LONGLONG
 	{"is_longlong", (PyCFunction)Eterm_is_longlong, METH_NOARGS, NULL},
 #endif
-#ifdef ERL_IS_U_LONGLONG
+#ifdef ERL_IS_UNSIGNED_LONGLONG
 	{"is_unsigned_longlong", (PyCFunction)Eterm_is_unsigned_longlong,
 	 METH_NOARGS, NULL},
 #endif

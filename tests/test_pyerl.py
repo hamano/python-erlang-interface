@@ -53,12 +53,6 @@ class PyErlTest(unittest.TestCase):
         self.assertEqual(eterm.is_integer(), True);
         self.assertEqual(str(eterm), "-1");
 
-    def test_mk_longlong(self):
-        eterm = pyerl.mk_longlong(-1)
-        self.assertEqual(eterm.type, pyerl.LONGLONG);
-        self.assertEqual(eterm.is_longlong(), True);
-        self.assertEqual(str(eterm), "-1");
-
     def test_mk_list(self):
         atom = eterm = pyerl.mk_atom("atom")
         integer = eterm = pyerl.mk_int(-1)
@@ -116,17 +110,27 @@ class PyErlTest(unittest.TestCase):
         self.assertEqual(eterm.is_unsigned_integer(), True);
         self.assertEqual(str(eterm), "1");
 
-    def test_mk_ulonglong(self):
-        eterm = pyerl.mk_ulonglong(1)
-        self.assertEqual(eterm.type, pyerl.U_LONGLONG);
-        self.assertEqual(eterm.is_unsigned_longlong(), True);
-        self.assertEqual(str(eterm), "1");
-
     def test_mk_var(self):
         eterm = pyerl.mk_var("var")
         self.assertEqual(eterm.type, pyerl.VARIABLE);
         # Cannot convert string, I don't know why.
         # self.assertEqual(str(eterm), "var");
+
+    def test_mk_longlong(self):
+        if not 'mk_longlong' in dir(pyerl):
+            return
+        eterm = pyerl.mk_longlong(-1)
+        self.assertEqual(eterm.type, pyerl.LONGLONG);
+        self.assertEqual(eterm.is_longlong(), True);
+        self.assertEqual(str(eterm), "-1");
+
+    def test_mk_ulonglong(self):
+        if not 'mk_ulonglong' in dir(pyerl):
+            return
+        eterm = pyerl.mk_ulonglong(1)
+        self.assertEqual(eterm.type, pyerl.U_LONGLONG);
+        self.assertEqual(eterm.is_unsigned_longlong(), True);
+        self.assertEqual(str(eterm), "1");
 
     def test_copy_term(self):
         atom = pyerl.mk_atom("atom")
@@ -138,11 +142,12 @@ class PyErlTest(unittest.TestCase):
     def test_cons(self):
         atom1 = pyerl.mk_atom("atom1")
         atom2 = pyerl.mk_atom("atom2")
-        eterm = pyerl.cons(atom1, atom2)
+        list = pyerl.mk_list([atom1])
+        eterm = pyerl.cons(atom2, list)
         self.assertEqual(eterm.type, pyerl.CONS);
         self.assertEqual(eterm.is_cons(), True);
         self.assertEqual(eterm.is_list(), True);
-        self.assertEqual(str(eterm), "[atom1 | atom2]");
+        self.assertEqual(str(eterm), "[atom2, atom1]");
 
 if __name__ == '__main__':
     unittest.main()

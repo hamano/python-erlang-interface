@@ -9,6 +9,9 @@ build:
 clean:
 	rm -rf build/ MANIFEST pyerl.html
 
+test:
+	./tests/test_pyerl.py
+
 sdist:
 	python setup.py sdist
 

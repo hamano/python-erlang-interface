@@ -1,2 +1,3 @@
+include Makefile
 include *.h
 include tests/*.py

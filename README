@@ -4,6 +4,16 @@ PyErl
 PyErl is Erlang Interface for Python. which help you integrate
 programs written in Python and Erlang.
 
+DEPENDENCIES
+------------
+
+This module requires these other modules and libraries:
+
+ Erlang/OTP R12 or later
+
+In debian:
+ apt-get install erlang-dev
+
 INSTALL
 -------
 

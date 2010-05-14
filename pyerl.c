@@ -117,10 +117,11 @@ pyerl_xreceive_msg(PyObject *self, PyObject *args)
 		return NULL;
 	}
 	if(fd < 0){
+		PyErr_SetString(PyExc_IOError, "Invalid descriptor.");
 		return NULL;
 	}
 	if(!(msg = (EtermObject *)EtermType.tp_new(&EtermType, NULL, NULL))){
-		return NULL;
+		return PyErr_NoMemory();
 	}
 	ret = erl_xreceive_msg(fd, &buf, &size, &emsg);
 	msg->term = erl_copy_term(emsg.msg);
@@ -142,6 +143,7 @@ pyerl_send(PyObject *self, PyObject *args)
 		return NULL;
 	}
 	if(fd < 0){
+		PyErr_SetString(PyExc_IOError, "Invalid descriptor.");
 		return NULL;
 	}
 	if(!PyObject_TypeCheck(to, &EtermType) ||
@@ -167,6 +169,7 @@ pyerl_reg_send(PyObject *self, PyObject *args)
 		return NULL;
 	}
 	if(fd < 0){
+		PyErr_SetString(PyExc_IOError, "Invalid descriptor.");
 		return NULL;
 	}
 	if(!PyObject_TypeCheck(msg, &EtermType)){
@@ -189,13 +192,14 @@ pyerl_rpc(PyObject *self, PyObject *args)
 		return NULL;
 	}
 	if(fd < 0){
+		PyErr_SetString(PyExc_IOError, "Invalid descriptor.");
 		return NULL;
 	}
 	if(!PyObject_TypeCheck(arg, &EtermType)){
 		return NULL;
 	}
 	if(!(ret = (EtermObject *)EtermType.tp_new(&EtermType, NULL, NULL))){
-		return NULL;
+		return PyErr_NoMemory();
 	}
 	ret->term = erl_rpc(fd, mod, fun, arg->term);
 	return (PyObject *)ret;
@@ -282,17 +286,18 @@ pyerl_cons(PyObject *self, PyObject *args)
 	   !PyObject_TypeCheck(tail, &EtermType)){
 		return NULL;
 	}
-	if(!(ret = (EtermObject *)EtermType.tp_new(&EtermType, NULL, NULL))){
-		return NULL;
-	}
 	ehead = (EtermObject *)head;
 	etail = (EtermObject *)tail;
 	if(!ehead->term || !etail->term){
+		PyErr_SetString(PyExc_TypeError, "Invalid arguments.");
 		return NULL;
+	}
+	if(!(ret = (EtermObject *)EtermType.tp_new(&EtermType, NULL, NULL))){
+		return PyErr_NoMemory();
 	}
 	if(!(ret->term = erl_cons(ehead->term, etail->term))){
 		EtermType.tp_dealloc((PyObject *)ret);
-		return NULL;
+		return PyErr_NoMemory();
 	}
 	return (PyObject *)ret;
 }
@@ -312,15 +317,16 @@ pyerl_copy_term(PyObject *self, PyObject *args)
 	}
 
 	if(!(ret = (EtermObject *)EtermType.tp_new(&EtermType, NULL, NULL))){
-		return NULL;
+		return PyErr_NoMemory();
 	}
 	eterm = (EtermObject *)term;
 	if(!eterm->term){
+		PyErr_SetString(PyExc_TypeError, "Invalid arguments.");
 		return NULL;
 	}
 	if(!(ret->term = erl_copy_term(eterm->term))){
 		EtermType.tp_dealloc((PyObject *)ret);
-		return NULL;
+		return PyErr_NoMemory();
 	}
 	return (PyObject *)ret;
 }
@@ -341,14 +347,16 @@ pyerl_element(PyObject *self, PyObject *args)
 		return NULL;
 	}
 	if(!(ret = (EtermObject *)EtermType.tp_new(&EtermType, NULL, NULL))){
-		return NULL;
+		return PyErr_NoMemory();
 	}
 	etuple = (EtermObject *)tuple;
 	if(!etuple->term){
+		PyErr_SetString(PyExc_TypeError, "Invalid arguments.");
 		return NULL;
 	}
 	size = erl_size(etuple->term);
 	if(position < 1 || position > size){
+		PyErr_SetString(PyExc_IndexError, "Index out of range.");
 		return NULL;
 	}
 	ret->term = erl_element(position, etuple->term);
@@ -369,10 +377,11 @@ pyerl_hd(PyObject *self, PyObject *args)
 		return NULL;
 	}
 	if(!(ret = (EtermObject *)EtermType.tp_new(&EtermType, NULL, NULL))){
-		return NULL;
+		return PyErr_NoMemory();
 	}
 	eterm = (EtermObject *)term;
 	if(!eterm->term){
+		PyErr_SetString(PyExc_TypeError, "Invalid arguments.");
 		return NULL;
 	}
 	ret->term = erl_hd(eterm->term);
@@ -397,10 +406,11 @@ pyerl_tl(PyObject *self, PyObject *args)
 		return NULL;
 	}
 	if(!(ret = (EtermObject *)EtermType.tp_new(&EtermType, NULL, NULL))){
-		return NULL;
+		return PyErr_NoMemory();
 	}
 	eterm = (EtermObject *)term;
 	if(!eterm->term){
+		PyErr_SetString(PyExc_TypeError, "Invalid arguments.");
 		return NULL;
 	}
 	ret->term = erl_tl(eterm->term);
@@ -441,11 +451,11 @@ pyerl_mk_binary(PyObject *self, PyObject *args)
 		return NULL;
 	}
 	if(!(eterm = (EtermObject *)EtermType.tp_new(&EtermType, NULL, NULL))){
-		return NULL;
+		return PyErr_NoMemory();
 	}
 	if(!(eterm->term = erl_mk_binary(bptr, size))){
 		EtermType.tp_dealloc((PyObject *)eterm);
-		return NULL;
+		return PyErr_NoMemory();
 	}
 	return (PyObject *)eterm;
 }
@@ -460,7 +470,7 @@ pyerl_mk_empty_list(PyObject *self, PyObject *args)
 	}
 	if(!(eterm->term = erl_mk_empty_list())){
 		EtermType.tp_dealloc((PyObject *)eterm);
-		return NULL;
+		return PyErr_NoMemory();
 	}
 	return (PyObject *)eterm;
 }
@@ -476,11 +486,11 @@ pyerl_mk_estring(PyObject *self, PyObject *args)
 		return NULL;
 	}
 	if(!(eterm = (EtermObject *)EtermType.tp_new(&EtermType, NULL, NULL))){
-		return NULL;
+		return PyErr_NoMemory();
 	}
 	if(!(eterm->term = erl_mk_estring(string, len))){
 		EtermType.tp_dealloc((PyObject *)eterm);
-		return NULL;
+		return PyErr_NoMemory();
 	}
 	return (PyObject *)eterm;
 }
@@ -495,11 +505,11 @@ pyerl_mk_float(PyObject *self, PyObject *args)
 		return NULL;
 	}
 	if(!(eterm = (EtermObject *)EtermType.tp_new(&EtermType, NULL, NULL))){
-		return NULL;
+		return PyErr_NoMemory();
 	}
 	if(!(eterm->term = erl_mk_float(f))){
 		EtermType.tp_dealloc((PyObject *)eterm);
-		return NULL;
+		return PyErr_NoMemory();
 	}
 	return (PyObject *)eterm;
 }
@@ -514,11 +524,11 @@ pyerl_mk_int(PyObject *self, PyObject *args)
 		return NULL;
 	}
 	if(!(eterm = (EtermObject *)EtermType.tp_new(&EtermType, NULL, NULL))){
-		return NULL;
+		return PyErr_NoMemory();
 	}
 	if(!(eterm->term = erl_mk_int(n))){
 		EtermType.tp_dealloc((PyObject *)eterm);
-		return NULL;
+		return PyErr_NoMemory();
 	}
 	return (PyObject *)eterm;
 }
@@ -542,13 +552,12 @@ pyerl_mk_list(PyObject *self, PyObject *args)
 	}
 	size = PyList_Size(array);
 	if(!(eterm = (EtermObject *)EtermType.tp_new(&EtermType, NULL, NULL))){
-		return NULL;
+		return PyErr_NoMemory();
 	}
 	eterm_array = (ETERM **)malloc(sizeof(ETERM *) * size);
 	for(i=0; i<size; i++){
 		obj = PyList_GetItem(array, i);
 		if(!PyObject_TypeCheck(obj, &EtermType)){
-			PyErr_SetString(PyExc_TypeError, "Expected pyerl_mk_list");
 			return NULL;
 		}
 		eobj = (EtermObject *)obj;
@@ -558,7 +567,7 @@ pyerl_mk_list(PyObject *self, PyObject *args)
 	if(!(eterm->term = erl_mk_list(eterm_array, size))){
 		free(eterm_array);
 		EtermType.tp_dealloc((PyObject *)eterm);
-		return NULL;
+		return PyErr_NoMemory();
 	}
 	free(eterm_array);
 	return (PyObject *)eterm;
@@ -577,11 +586,11 @@ pyerl_mk_pid(PyObject *self, PyObject *args)
 		return NULL;
 	}
 	if(!(eterm = (EtermObject *)EtermType.tp_new(&EtermType, NULL, NULL))){
-		return NULL;
+		return PyErr_NoMemory();
 	}
 	if(!(eterm->term = erl_mk_pid(node, number, serial, creation))){
 		EtermType.tp_dealloc((PyObject *)eterm);
-		return NULL;
+		return PyErr_NoMemory();
 	}
 	return (PyObject *)eterm;
 }
@@ -598,11 +607,11 @@ pyerl_mk_port(PyObject *self, PyObject *args)
 		return NULL;
 	}
 	if(!(eterm = (EtermObject *)EtermType.tp_new(&EtermType, NULL, NULL))){
-		return NULL;
+		return PyErr_NoMemory();
 	}
 	if(!(eterm->term = erl_mk_port(node, number, creation))){
 		EtermType.tp_dealloc((PyObject *)eterm);
-		return NULL;
+		return PyErr_NoMemory();
 	}
 	return (PyObject *)eterm;
 }
@@ -619,11 +628,11 @@ pyerl_mk_ref(PyObject *self, PyObject *args)
 		return NULL;
 	}
 	if(!(eterm = (EtermObject *)EtermType.tp_new(&EtermType, NULL, NULL))){
-		return NULL;
+		return PyErr_NoMemory();
 	}
 	if(!(eterm->term = erl_mk_ref(node, number, creation))){
 		EtermType.tp_dealloc((PyObject *)eterm);
-		return NULL;
+		return PyErr_NoMemory();
 	}
 	return (PyObject *)eterm;
 }
@@ -640,11 +649,11 @@ pyerl_mk_long_ref(PyObject *self, PyObject *args)
 		return NULL;
 	}
 	if(!(eterm = (EtermObject *)EtermType.tp_new(&EtermType, NULL, NULL))){
-		return NULL;
+		return PyErr_NoMemory();
 	}
 	if(!(eterm->term = erl_mk_long_ref(node, n1, n2, n3, creation))){
 		EtermType.tp_dealloc((PyObject *)eterm);
-		return NULL;
+		return PyErr_NoMemory();
 	}
 	return (PyObject *)eterm;
 }
@@ -659,11 +668,11 @@ pyerl_mk_string(PyObject *self, PyObject *args)
 		return NULL;
 	}
 	if(!(eterm = (EtermObject *)EtermType.tp_new(&EtermType, NULL, NULL))){
-		return NULL;
+		return PyErr_NoMemory();
 	}
 	if(!(eterm->term = erl_mk_string(string))){
 		EtermType.tp_dealloc((PyObject *)eterm);
-		return NULL;
+		return PyErr_NoMemory();
 	}
 	return (PyObject *)eterm;
 }
@@ -690,7 +699,6 @@ pyerl_mk_tuple(PyObject *self, PyObject *args)
 	for(i=0; i<size; i++){
 		obj = PyTuple_GetItem(array, i);
 		if(!PyObject_TypeCheck(obj, &EtermType)){
-			PyErr_SetString(PyExc_TypeError, "Expected pyerl_mk_tuple");
 			return NULL;
 		}
 		eobj = (EtermObject *)obj;
@@ -699,13 +707,13 @@ pyerl_mk_tuple(PyObject *self, PyObject *args)
 
 	if(!(eterm = (EtermObject *)EtermType.tp_new(&EtermType, NULL, NULL))){
 		free(eterm_array);
-		return NULL;
+		return PyErr_NoMemory();
 	}
 
 	if(!(eterm->term = erl_mk_tuple(eterm_array, size))){
 		free(eterm_array);
 		EtermType.tp_dealloc((PyObject *)eterm);
-		return NULL;
+		return PyErr_NoMemory();
 	}
 	free(eterm_array);
 	return (PyObject *)eterm;
@@ -721,11 +729,11 @@ pyerl_mk_uint(PyObject *self, PyObject *args)
 		return NULL;
 	}
 	if(!(eterm = (EtermObject *)EtermType.tp_new(&EtermType, NULL, NULL))){
-		return NULL;
+		return PyErr_NoMemory();
 	}
 	if(!(eterm->term = erl_mk_uint(n))){
 		EtermType.tp_dealloc((PyObject *)eterm);
-		return NULL;
+		return PyErr_NoMemory();
 	}
 	return (PyObject *)eterm;
 }
@@ -744,7 +752,7 @@ pyerl_mk_var(PyObject *self, PyObject *args)
 	}
 	if(!(eterm->term = erl_mk_var(name))){
 		EtermType.tp_dealloc((PyObject *)eterm);
-		return NULL;
+		return PyErr_NoMemory();
 	}
 	return (PyObject *)eterm;
 }
@@ -760,11 +768,11 @@ pyerl_mk_longlong(PyObject *self, PyObject *args)
 		return NULL;
 	}
 	if(!(eterm = (EtermObject *)EtermType.tp_new(&EtermType, NULL, NULL))){
-		return NULL;
+		return PyErr_NoMemory();
 	}
 	if(!(eterm->term = erl_mk_longlong(ll))){
 		EtermType.tp_dealloc((PyObject *)eterm);
-		return NULL;
+		return PyErr_NoMemory();
 	}
 	return (PyObject *)eterm;
 }
@@ -781,11 +789,11 @@ pyerl_mk_ulonglong(PyObject *self, PyObject *args)
 		return NULL;
 	}
 	if(!(eterm = (EtermObject *)EtermType.tp_new(&EtermType, NULL, NULL))){
-		return NULL;
+		return PyErr_NoMemory();
 	}
 	if(!(eterm->term = erl_mk_ulonglong(ll))){
 		EtermType.tp_dealloc((PyObject *)eterm);
-		return NULL;
+		return PyErr_NoMemory();
 	}
 	return (PyObject *)eterm;
 }
@@ -812,6 +820,7 @@ pyerl_print_term(PyObject *self, PyObject *args)
 	}
 	eterm = (EtermObject *)term;
 	if(!eterm->term){
+		PyErr_SetString(PyExc_TypeError, "Invalid arguments.");
 		return NULL;
 	}
 	ret = erl_print_term(fp, eterm->term);
@@ -837,6 +846,7 @@ pyerl_size(PyObject *self, PyObject *args)
 
 	eterm = (EtermObject *)term;
 	if(!eterm->term){
+		PyErr_SetString(PyExc_TypeError, "Invalid arguments.");
 		return NULL;
 	}
 	ret = erl_size(eterm->term);

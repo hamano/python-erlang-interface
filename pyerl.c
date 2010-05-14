@@ -44,7 +44,7 @@ pyerl_connect_init(PyObject *self, PyObject *args)
 		return NULL;
 	}
 	ret = erl_connect_init(number, cookie, creation);
-	return Py_BuildValue("i", ret);
+	return PyInt_FromLong(ret);
 }
 
 static PyObject *
@@ -62,7 +62,7 @@ pyerl_connect_xinit(PyObject *self, PyObject *args)
 	}
 	ia.s_addr = inet_addr(addr);
 	ret = erl_connect_xinit(host ,alive, node, &ia, cookie, creation);
-	return Py_BuildValue("i", ret);
+	return PyInt_FromLong(ret);
 }
 
 static PyObject *
@@ -74,7 +74,7 @@ pyerl_connect(PyObject *self, PyObject *args)
 	if(!PyArg_ParseTuple(args, "s", &node))
 		return NULL;
 	ret = erl_connect(node);
-	return Py_BuildValue("i", ret);
+	return PyInt_FromLong(ret);
 }
 
 static PyObject *
@@ -88,7 +88,7 @@ pyerl_xconnect(PyObject *self, PyObject *args)
 		return NULL;
 	ia.s_addr = inet_addr(addr);
 	ret = erl_xconnect(&ia, alive);
-	return Py_BuildValue("i", ret);
+	return PyInt_FromLong(ret);
 }
 
 static PyObject *
@@ -100,7 +100,7 @@ pyerl_close_connection(PyObject *self, PyObject *args)
 		return NULL;
 	}
 	ret = erl_close_connection(fd);
-	return Py_BuildValue("i", ret);
+	return PyInt_FromLong(ret);
 }
 
 static PyObject *
@@ -153,7 +153,7 @@ pyerl_send(PyObject *self, PyObject *args)
 	eto = (EtermObject *)to;
 	emsg = (EtermObject *)msg;
 	ret = erl_send(fd, eto->term, emsg->term);
-	return Py_BuildValue("i", ret);
+	return PyInt_FromLong(ret);
 }
 
 static PyObject *
@@ -177,7 +177,7 @@ pyerl_reg_send(PyObject *self, PyObject *args)
 	}
 	emsg = (EtermObject *)msg;
 	ret = erl_reg_send(fd, to, emsg->term);
-	return Py_BuildValue("i", ret);
+	return PyInt_FromLong(ret);
 }
 
 static PyObject *
@@ -214,7 +214,7 @@ pyerl_publish(PyObject *self, PyObject *args)
 		return NULL;
 	}
 	ret = erl_publish(port);
-	return Py_BuildValue("i", ret);
+	return PyInt_FromLong(ret);
 }
 
 static PyObject *
@@ -226,7 +226,7 @@ pyerl_unpublish(PyObject *self, PyObject *args)
 	if(!PyArg_ParseTuple(args, "s", &alive))
 		return NULL;
 	ret = erl_unpublish(alive);
-	return Py_BuildValue("i", ret);
+	return PyInt_FromLong(ret);
 }
 
 static PyObject *
@@ -266,7 +266,7 @@ pyerl_thiscreation(PyObject *self, PyObject *args)
 {
 	int ret;
 	ret = erl_thiscreation();
-	return Py_BuildValue("i", ret);
+	return PyInt_FromLong(ret);
 }
 
 
@@ -825,8 +825,7 @@ pyerl_print_term(PyObject *self, PyObject *args)
 	}
 	ret = erl_print_term(fp, eterm->term);
 	fprintf(fp, "\n");
-
-	return Py_BuildValue("i", ret);
+	return PyInt_FromLong(ret);
 }
 
 static PyObject *
@@ -850,7 +849,7 @@ pyerl_size(PyObject *self, PyObject *args)
 		return NULL;
 	}
 	ret = erl_size(eterm->term);
-	return Py_BuildValue("i", ret);
+	return PyInt_FromLong(ret);
 }
 
 static PyObject *

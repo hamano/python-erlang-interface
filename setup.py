@@ -23,7 +23,7 @@ include_dirs = [otp_dir + 'include/']
 library_dirs = [otp_dir + 'lib/']
 
 setup(name = "PyErl",
-      version = "0.4.3",
+      version = "0.5",
       description = "Erlang Interface for Python",
       long_description = '''
 PyErl is Erlang Interface for Python. which help you integrate

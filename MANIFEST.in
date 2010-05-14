@@ -1,3 +1,4 @@
 include Makefile
 include *.h
 include tests/*.py
+include tests/*.erl

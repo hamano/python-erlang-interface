@@ -7,7 +7,7 @@ build:
 	cp build/lib.*/*.so ./
 
 clean:
-	rm -rf build/ MANIFEST pyerl.html
+	rm -rf build/ MANIFEST pyerl.html *.beam
 
 test:
 	./tests/test_pyerl.py

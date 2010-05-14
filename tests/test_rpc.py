@@ -7,6 +7,8 @@ import pyerl
 
 class RPCTest(unittest.TestCase):
     def setUp(self):
+        ret = subprocess.call(["erlc", "tests/pingpong.erl"])
+        self.assertEqual(ret, 0)
         cmd = 'erl -noshell -setcookie "TESTCOOKIE" -sname node1@localhost -s pingpong start'
         self.proc = subprocess.Popen(cmd, shell=True)
 

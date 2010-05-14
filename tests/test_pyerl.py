@@ -5,7 +5,7 @@ import pyerl
 
 class PyErlTest(unittest.TestCase):
     def setUp(self):
-        pyerl.init()
+        pass
 
     def tearDown(self):
         pyerl.eterm_release()

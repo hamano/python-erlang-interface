@@ -868,6 +868,30 @@ pyerl_eterm_statistics(PyObject *self, PyObject *args)
 	return Py_BuildValue("(kk)", allocated, freed);
 }
 
+static PyObject *
+pyerl_term_len(PyObject *self, PyObject *args)
+{
+	int ret = 0;
+	PyObject *term = NULL;
+	EtermObject *eterm;
+
+	if(!PyArg_ParseTuple(args, "O", &term)){
+		return NULL;
+	}
+
+	if(!PyObject_TypeCheck(term, &EtermType)){
+		return NULL;
+	}
+
+	eterm = (EtermObject *)term;
+	if(!eterm->term){
+		PyErr_SetString(PyExc_TypeError, "Invalid arguments.");
+		return NULL;
+	}
+	ret = erl_term_len(eterm->term);
+	return PyInt_FromLong(ret);
+}
+
 static PyMethodDef methods[] = {
 	{"init", pyerl_init, METH_VARARGS, "\
 This function must be called before any of the others in the\n\
@@ -944,6 +968,7 @@ These functions support calling Erlang functions on remote nodes. "},
 
 	{"eterm_release", pyerl_eterm_release, METH_NOARGS, NULL},
 	{"eterm_statistics", pyerl_eterm_statistics, METH_NOARGS, NULL},
+	{"term_len", pyerl_term_len, METH_VARARGS, NULL},
 	{NULL, NULL}
 };
 

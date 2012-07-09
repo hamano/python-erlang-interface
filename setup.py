@@ -2,17 +2,23 @@
 
 from distutils.core import setup, Extension
 from os import path
-
-search_dirs = [
-    "/usr/",
-    "/usr/local/",
-    "/usr/local/otp/",
-    ]
+import os
+import re
 
 otp_dir = None
-for d in search_dirs:
-    if path.isfile(d + 'include/erl_interface.h'):
-        otp_dir = d
+
+def findInSubdirectory(filename, subdirectory=''):
+    if subdirectory:
+        path = subdirectory
+    else:
+        path = os.getcwd()
+    for root, dirs, names in os.walk(path):
+        if filename in names:
+            this_path = re.sub('include/erl_interface.h', '', os.path.join(root, filename))
+            return this_path
+    return None
+
+otp_dir = findInSubdirectory('erl_interface.h', '/usr/')
 
 if otp_dir == None:
     print 'Cannot find Erlang/OTP directory.'

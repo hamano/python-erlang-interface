@@ -7,6 +7,9 @@ import re
 
 otp_dir = None
 
+def getSearchDir():
+    return os.environ.get('ERL_HOME', os.environ.get('ERLANG_HOME', '/usr'))
+
 def findInSubdirectory(filename, subdirectory=''):
     if subdirectory:
         path = subdirectory
@@ -18,7 +21,7 @@ def findInSubdirectory(filename, subdirectory=''):
             return this_path
     return None
 
-otp_dir = findInSubdirectory('erl_interface.h', '/usr/')
+otp_dir = findInSubdirectory('erl_interface.h', getSearchDir())
 
 if otp_dir == None:
     print 'Cannot find Erlang/OTP directory.'

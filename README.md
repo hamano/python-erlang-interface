@@ -1,6 +1,10 @@
 PyErl
 =====
 
+[![PyPI](https://img.shields.io/pypi/v/PyErl.svg)](https://pypi.python.org/pypi/PyErl/)
+[![Build Status](https://travis-ci.org/hamano/python-erlang-interface.svg?branch=master)](https://travis-ci.org/hamano/python-erlang-interface)
+[![GitHub license](https://img.shields.io/github/license/hamano/python-erlang-interface.svg)]()
+
 PyErl is Erlang Interface for Python. which help you integrate
 programs written in Python and Erlang.
 
